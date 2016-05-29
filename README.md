@@ -50,8 +50,6 @@ streamer.get(nesting_level:2).each do |object|
 end
 ```
 
-Getting second level objects on the JSON below will yield you 2 empty objects
-
 ```json
 {
     "object1": {},
