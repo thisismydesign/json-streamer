@@ -100,6 +100,39 @@ RSpec.describe Json::Streamer::JsonStreamer do
       end
     end
 
+    context 'Get values' do
+      it 'should yield values from given level' do
+
+        hash = {obj:@example_hash}
+        json_file_mock = StringIO.new(JSON.generate(hash))
+        streamer = Json::Streamer::JsonStreamer.new(json_file_mock, 10)
+
+        objects = []
+        streamer.get(nesting_level:2) do |object|
+          objects << object
+        end
+
+        expect(objects.length).to eq(1)
+        expect(objects[0]).to eq(@example_value)
+      end
+    end
+
+    context 'Do not get values' do
+      it 'should not yield values from given level' do
+
+        hash = {obj:@example_hash}
+        json_file_mock = StringIO.new(JSON.generate(hash))
+        streamer = Json::Streamer::JsonStreamer.new(json_file_mock, 10)
+
+        objects = []
+        streamer.get(nesting_level:2, yield_values:false) do |object|
+          objects << object
+        end
+
+        expect(objects.length).to eq(0)
+      end
+    end
+
   end
 
   describe '#get_nesting_level' do

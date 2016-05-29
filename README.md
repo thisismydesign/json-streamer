@@ -44,7 +44,7 @@ streamer = Json::Streamer::JsonStreamer.new(file_stream, 500)
 
 ```ruby
 # Get objects based on nesting level
-# Level zero will give you the full JSON, first level will give you objects within full JSON object, etc.
+# Level zero will give you the full JSON, first level will give you data within full JSON object, etc.
 streamer.get(nesting_level:1).each do |object|
     p object
 end
@@ -88,6 +88,24 @@ end
 "value"
 "value"
 {"key" : "value"}
+```
+
+```ruby
+# You can also skip values if you'd only like to get objects and arrays
+streamer.get(nesting_level:1, yield_values:false).each do |object|
+    p object
+end
+```
+
+```json
+{
+    "obj1" : {}
+    "key" : "value"
+}
+
+=>
+
+{}
 ```
 
 Check the unit tests for more examples.

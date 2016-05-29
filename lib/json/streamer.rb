@@ -24,22 +24,23 @@ module Json
 
       end
 
-      def get(nesting_level:-1, key:nil)
+      # Callbacks containing yield has be defined in the method called via block
+      def get(nesting_level:-1, key:nil, yield_values:true)
         @yield_nesting_level = nesting_level
         @wanted_key = key
+        @yield_values = yield_values
 
         @parser.value do |v|
           if @aggregator[@current_nesting_level].kind_of? Array
             @aggregator[@current_nesting_level] << v
           else
             @aggregator[@current_nesting_level][@current_key] = v
-            if yield_value?
+            if @yield_values and yield_value?
               yield v
             end
           end
         end
 
-        # Callback containing yield has be defined in the method called via block
         @parser.end_object do
           if yield_object?
             yield @aggregator[@current_nesting_level].clone
@@ -74,7 +75,7 @@ module Json
       end
 
       def yield_value?
-        @wanted_key == @current_key
+        (@current_nesting_level + 1).eql? @yield_nesting_level or @wanted_key == @current_key
       end
 
       def start_object
@@ -89,12 +90,8 @@ module Json
         @aggregator[@current_nesting_level] = []
       end
 
-      def key k
+      def key(k)
         @current_key = k
-      end
-
-      def value v
-
       end
 
       def merge_up
