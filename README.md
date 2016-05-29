@@ -99,7 +99,7 @@ end
 
 ```json
 {
-    "obj1" : {}
+    "obj1" : {},
     "key" : "value"
 }
 
