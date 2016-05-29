@@ -45,7 +45,9 @@ streamer = Json::Streamer::JsonStreamer.new(file_stream, 500)
 ```ruby
 # Get objects based on nesting level
 # First level will give you the full JSON, second level will give you objects within full JSON object, etc.
-streamer.get_objects_from_level(2)
+streamer.get_objects_from_level(2).each do |object|
+    p object
+end
 ```
 
 Getting second level objects on the JSON below will yield you 2 empty objects
