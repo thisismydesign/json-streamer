@@ -3,9 +3,12 @@ require 'spec_helper'
 RSpec.describe Json::Streamer::JsonStreamer do
 
   before(:each) do
+    @example_key = 'key'
+    @example_value = 'value'
+    @example_hash = {@example_key => @example_value}
   end
 
-  describe '#get' do
+  describe '#get_nesting_level' do
 
     context 'Get first level of empty JSON object' do
       it 'should yield empty JSON object' do
@@ -15,7 +18,7 @@ RSpec.describe Json::Streamer::JsonStreamer do
         streamer = Json::Streamer::JsonStreamer.new(json_file_mock, 10)
 
         objects = []
-        streamer.get_objects_from_level(1) do |object|
+        streamer.get(nesting_level:1) do |object|
           objects << object
         end
 
@@ -27,22 +30,18 @@ RSpec.describe Json::Streamer::JsonStreamer do
     context 'Get second level from JSON' do
       it 'should yield objects within JSON object' do
 
-        key = 'key'
-        value = 'value'
-        json_object = {key => value}
-
-        hash = {'object1':json_object, 'object2':json_object, 'object3':json_object}
+        hash = {'object1':@example_hash, 'object2':@example_hash, 'object3':@example_hash}
         json_file_mock = StringIO.new(JSON.generate(hash))
         streamer = Json::Streamer::JsonStreamer.new(json_file_mock, 10)
 
         objects = []
-        streamer.get_objects_from_level(2) do |object|
+        streamer.get(nesting_level:2) do |object|
           objects.push(object)
         end
 
         expect(objects.length).to eq(hash.length)
         objects.each do |element|
-          expect(element).to eq(json_object)
+          expect(element).to eq(@example_hash)
         end
       end
     end
@@ -50,22 +49,18 @@ RSpec.describe Json::Streamer::JsonStreamer do
     context 'Get second level from JSON array' do
       it 'should yield objects in array elements' do
 
-        key = 'key'
-        value = 'value'
-        json_object = {key => value}
-
-        array = Array.new(10) {json_object}
+        array = Array.new(10) {@example_hash}
         json_file_mock = StringIO.new(JSON.generate(array))
         streamer = Json::Streamer::JsonStreamer.new(json_file_mock, 10)
 
         objects = []
-        streamer.get_objects_from_level(2) do |object|
+        streamer.get(nesting_level:2) do |object|
           objects << object
         end
 
         expect(objects.length).to eq(array.length)
         objects.each do |element|
-          expect(element).to eq(json_object)
+          expect(element).to eq(@example_hash)
         end
       end
     end
@@ -83,7 +78,7 @@ RSpec.describe Json::Streamer::JsonStreamer do
           streamer = Json::Streamer::JsonStreamer.new(json_file_mock, 10)
 
           objects = []
-          streamer.get_objects_from_level(max_level) do |object|
+          streamer.get(nesting_level:max_level) do |object|
             objects << object
           end
 
@@ -91,5 +86,103 @@ RSpec.describe Json::Streamer::JsonStreamer do
         end
       end
     end
+
+    context 'Finished parsing' do
+      it 'should remove object from memory' do
+
+        hash = {obj:@example_hash}
+        json_file_mock = StringIO.new(JSON.generate(hash))
+        streamer = Json::Streamer::JsonStreamer.new(json_file_mock, 10)
+
+        streamer.get(nesting_level:1) {}
+
+        expect(streamer.aggregator[1].size).to eq(0)
+      end
+    end
+
   end
+
+  describe '#get_nesting_level' do
+
+    context 'Get data from flat JSON by key' do
+      it 'should yield value within JSON object' do
+
+        json_file_mock = StringIO.new(JSON.generate(@example_hash))
+        streamer = Json::Streamer::JsonStreamer.new(json_file_mock, 10)
+
+        objects = []
+        streamer.get(key:@example_key) do |object|
+          objects.push(object)
+        end
+
+        expect(objects.length).to eq(@example_hash.length)
+        objects.each do |element|
+          expect(element).to eq(@example_value)
+        end
+      end
+    end
+
+    context 'Get data from multi level JSON by key' do
+      it 'should yield values within JSON object second level' do
+
+        hash = {obj1:@example_hash, obj2:@example_hash, obj3:@example_hash}
+        json_file_mock = StringIO.new(JSON.generate(hash))
+        streamer = Json::Streamer::JsonStreamer.new(json_file_mock, 10)
+
+        objects = []
+        streamer.get(key:@example_key) do |object|
+          objects.push(object)
+        end
+
+        expect(objects.length).to eq(hash.length)
+        objects.each do |element|
+          expect(element).to eq(@example_value)
+        end
+      end
+    end
+
+    context 'Get data from multi level JSON by key' do
+      it 'should yield values within JSON object from all levels the key occurs' do
+
+        hash = {'obj1' => @example_hash, @example_key => @example_value}
+        json_file_mock = StringIO.new(JSON.generate(hash))
+        streamer = Json::Streamer::JsonStreamer.new(json_file_mock, 10)
+
+        objects = []
+        streamer.get(key:@example_key) do |object|
+          objects.push(object)
+        end
+
+        expect(objects.length).to eq(2)
+        objects.each do |element|
+          expect(element).to eq(@example_value)
+        end
+      end
+    end
+
+    context 'Get data from multi level JSON by key' do
+      it 'should yield values and objects as well within JSON object from all levels the key occurs' do
+
+        hash = {'obj1' => @example_hash, @example_key => @example_value, 'obj2' => {@example_key => @example_hash}}
+        json_file_mock = StringIO.new(JSON.generate(hash))
+        streamer = Json::Streamer::JsonStreamer.new(json_file_mock, 10)
+
+        objects = []
+        streamer.get(key:@example_key) do |object|
+          objects.push(object)
+        end
+
+        p hash
+        p objects
+
+        expect(objects.length).to eq(4)
+        objects[0..2].each do |element|
+          expect(element).to eq(@example_value)
+        end
+        expect(objects[3]).to eq(@example_hash)
+      end
+    end
+
+  end
+
 end

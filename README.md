@@ -1,7 +1,6 @@
 # Json::Streamer
 
-Utility to support JSON streaming allowing you to get objects based on various criteria.
-Useful for e.g. streaming objects from a JSON array.
+Utility to support JSON streaming allowing you to get data based on various criteria (key, nesting level, etc).
 
 This gem will basically spare you the need to define you own callbacks when parsing JSON stream.
 Streaming is useful for
@@ -9,7 +8,7 @@ Streaming is useful for
 - files read in chunks (e.g. arriving over network)
 - cases where you expect some issue with the file (e.g. losing connection to source, invalid data at some point) but would like to get as much data as possible anyway
 
-Regarding performance:
+Performance:
 The gem uses JSON::Stream's events in the background. It was chosen because it's a pure Ruby parser.
 A similar implementation can be done using the ~10 times faster Yajl::FFI gem that is dependent on the native YAJL library.
 I did not measure the performance of my implementation on top of these libraries.
@@ -45,7 +44,7 @@ streamer = Json::Streamer::JsonStreamer.new(file_stream, 500)
 ```ruby
 # Get objects based on nesting level
 # First level will give you the full JSON, second level will give you objects within full JSON object, etc.
-streamer.get_objects_from_level(2).each do |object|
+streamer.get(nesting_level:2).each do |object|
     p object
 end
 ```
@@ -57,6 +56,35 @@ Getting second level objects on the JSON below will yield you 2 empty objects
     "object1": {},
     "object2": {}
 }
+=>
+{}
+{}
+```
+
+```ruby
+# Get data based on key
+streamer.get(key:'key').each do |object|
+    p object
+end
+```
+
+```json
+{
+    "obj1" : {
+        "key" : "value"
+    },
+    "key" : "value",
+    "obj2" : {
+        "key" : {
+            "key" : value"
+        }
+    }
+}
+=>
+"value"
+"value"
+"value"
+{"key"=>"value"}
 ```
 
 Check the unit tests for more examples.

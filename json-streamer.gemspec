@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Csaba Apagyi"]
   spec.email         = ["csapagyi@users.noreply.github.com"]
 
-  spec.summary       = %q{Utility to support JSON streaming allowing you to get objects based on various criteria. Useful for e.g. streaming objects from a JSON array.}
+  spec.summary       = %q{Utility to support JSON streaming allowing you to get data based on various criteria (key, nesting level, etc)}
   spec.homepage      = "https://github.com/csapagyi/json-streamer"
   spec.license       = "MIT"
 
