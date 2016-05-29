@@ -10,7 +10,7 @@ RSpec.describe Json::Streamer::JsonStreamer do
 
   describe '#get_nesting_level' do
 
-    context 'Get first level of empty JSON object' do
+    context 'Get 0th level of empty JSON object' do
       it 'should yield empty JSON object' do
 
         hash = {}
@@ -18,7 +18,7 @@ RSpec.describe Json::Streamer::JsonStreamer do
         streamer = Json::Streamer::JsonStreamer.new(json_file_mock, 10)
 
         objects = []
-        streamer.get(nesting_level:1) do |object|
+        streamer.get(nesting_level:0) do |object|
           objects << object
         end
 
@@ -27,7 +27,7 @@ RSpec.describe Json::Streamer::JsonStreamer do
       end
     end
 
-    context 'Get second level from JSON' do
+    context 'Get first level from JSON' do
       it 'should yield objects within JSON object' do
 
         hash = {'object1':@example_hash, 'object2':@example_hash, 'object3':@example_hash}
@@ -35,7 +35,7 @@ RSpec.describe Json::Streamer::JsonStreamer do
         streamer = Json::Streamer::JsonStreamer.new(json_file_mock, 10)
 
         objects = []
-        streamer.get(nesting_level:2) do |object|
+        streamer.get(nesting_level:1) do |object|
           objects.push(object)
         end
 
@@ -46,7 +46,7 @@ RSpec.describe Json::Streamer::JsonStreamer do
       end
     end
 
-    context 'Get second level from JSON array' do
+    context 'Get first level from JSON array' do
       it 'should yield objects in array elements' do
 
         array = Array.new(10) {@example_hash}
@@ -54,7 +54,7 @@ RSpec.describe Json::Streamer::JsonStreamer do
         streamer = Json::Streamer::JsonStreamer.new(json_file_mock, 10)
 
         objects = []
-        streamer.get(nesting_level:2) do |object|
+        streamer.get(nesting_level:1) do |object|
           objects << object
         end
 
@@ -78,7 +78,7 @@ RSpec.describe Json::Streamer::JsonStreamer do
           streamer = Json::Streamer::JsonStreamer.new(json_file_mock, 10)
 
           objects = []
-          streamer.get(nesting_level:max_level) do |object|
+          streamer.get(nesting_level:max_level-1) do |object|
             objects << object
           end
 
@@ -94,9 +94,9 @@ RSpec.describe Json::Streamer::JsonStreamer do
         json_file_mock = StringIO.new(JSON.generate(hash))
         streamer = Json::Streamer::JsonStreamer.new(json_file_mock, 10)
 
-        streamer.get(nesting_level:1) {}
+        streamer.get(nesting_level:0) {}
 
-        expect(streamer.aggregator[1].size).to eq(0)
+        expect(streamer.aggregator[0].size).to eq(0)
       end
     end
 

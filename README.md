@@ -9,6 +9,7 @@ Streaming is useful for
 - cases where you expect some issue with the file (e.g. losing connection to source, invalid data at some point) but would like to get as much data as possible anyway
 
 Performance:
+
 The gem uses JSON::Stream's events in the background. It was chosen because it's a pure Ruby parser.
 A similar implementation can be done using the ~10 times faster Yajl::FFI gem that is dependent on the native YAJL library.
 I did not measure the performance of my implementation on top of these libraries.

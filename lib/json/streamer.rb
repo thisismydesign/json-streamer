@@ -13,7 +13,7 @@ module Json
         @file_io = file_io
         @chunk_size = chunk_size
 
-        @current_nesting_level = 0
+        @current_nesting_level = -1
         @current_key = nil
         @aggregator = {}
         @temp_aggregator_keys = {}
@@ -98,7 +98,7 @@ module Json
       end
 
       def merge_up
-        return if @current_nesting_level == 1
+        return if @current_nesting_level == 0
         previous_nesting_level = @current_nesting_level - 1
         if @aggregator[previous_nesting_level].kind_of? Array
           @aggregator[previous_nesting_level] << @aggregator[@current_nesting_level]
