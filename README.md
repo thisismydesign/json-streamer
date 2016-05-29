@@ -89,7 +89,7 @@ end
 "value"
 "value"
 "value"
-{"key"=>"value"}
+{"key" : "value"}
 ```
 
 Check the unit tests for more examples.
