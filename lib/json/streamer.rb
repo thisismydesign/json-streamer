@@ -26,26 +26,24 @@ module Json
 
       # Callbacks containing yield has be defined in the method called via block
       def get(nesting_level:-1, key:nil, yield_values:true)
-        @yield_nesting_level = nesting_level
-        @wanted_key = key
-        @yield_values = yield_values
+        yield_nesting_level = nesting_level
+        wanted_key = key
 
         @parser.value do |v|
           if @aggregator[@current_nesting_level].kind_of? Array
             @aggregator[@current_nesting_level] << v
           else
             @aggregator[@current_nesting_level][@current_key] = v
-            if @yield_values and yield_value?
+            if yield_values and yield_value?(yield_nesting_level, wanted_key)
               yield v
             end
           end
         end
 
         @parser.end_object do
-          if yield_object?
+          if yield_object?(yield_nesting_level, wanted_key)
             yield @aggregator[@current_nesting_level].clone
-            # TODO probably can be faster than reject!{true}
-            @aggregator[@current_nesting_level].reject!{true}
+            @aggregator[@current_nesting_level] = {}
           else
             merge_up
           end
@@ -54,10 +52,9 @@ module Json
         end
 
         @parser.end_array do
-          if yield_object?
+          if yield_object?(yield_nesting_level, wanted_key)
             yield @aggregator[@current_nesting_level].clone
-            # TODO probably can be faster than reject!{true}
-            @aggregator[@current_nesting_level].reject!{true}
+            @aggregator[@current_nesting_level] = []
           else
             merge_up
           end
@@ -70,12 +67,12 @@ module Json
         end
       end
 
-      def yield_object?
-        @current_nesting_level.eql? @yield_nesting_level or (not @wanted_key.nil? and @wanted_key == @temp_aggregator_keys[@current_nesting_level-1])
+      def yield_object?(yield_nesting_level, wanted_key)
+        @current_nesting_level.eql? yield_nesting_level or (not wanted_key.nil? and wanted_key == @temp_aggregator_keys[@current_nesting_level-1])
       end
 
-      def yield_value?
-        (@current_nesting_level + 1).eql? @yield_nesting_level or @wanted_key == @current_key
+      def yield_value?(yield_nesting_level, wanted_key)
+        (@current_nesting_level + 1).eql? yield_nesting_level or wanted_key == @current_key
       end
 
       def start_object
