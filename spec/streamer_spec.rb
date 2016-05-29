@@ -172,9 +172,6 @@ RSpec.describe Json::Streamer::JsonStreamer do
           objects.push(object)
         end
 
-        p hash
-        p objects
-
         expect(objects.length).to eq(4)
         objects[0..2].each do |element|
           expect(element).to eq(@example_value)
