@@ -14,8 +14,6 @@ The gem uses JSON::Stream's events in the background. It was chosen because it's
 A similar implementation can be done using the ~10 times faster Yajl::FFI gem that is dependent on the native YAJL library.
 I did not measure the performance of my implementation on top of these libraries.
 
-I do not recommend this or any of the gems mentioned above if you don't need streaming.
-
 ## Installation
 
 Add this line to your application's Gemfile:
