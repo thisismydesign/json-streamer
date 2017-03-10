@@ -4,7 +4,7 @@ Ruby utility that supports JSON streaming allowing you to get data based on vari
 
 *If you've tried JSON streaming with other Ruby libraries before (e.g. [JSON::Stream](https://github.com/dgraham/json-stream), [Yajl::FFI](https://github.com/dgraham/yajl-ffi)):*
 
-This gem will basically spare you the need to define you own callbacks (i.e. implement an actual JSON parser using `start_object`, `end_object`, `key`, `value`, etc.).
+This gem will basically spare you the need to define your own callbacks (i.e. implement an actual JSON parser using `start_object`, `end_object`, `key`, `value`, etc.).
 
 
 *If you're new to this:*
