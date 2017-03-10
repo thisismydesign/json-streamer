@@ -1,14 +1,22 @@
 # Json::Streamer
 
-Utility to support JSON streaming allowing you to get data based on various criteria (key, nesting level, etc).
+Ruby utility that supports JSON streaming allowing you to get data based on various criteria (key, nesting level, etc).
 
-This gem will basically spare you the need to define you own callbacks when parsing JSON stream.
+*If you've tried JSON streaming with other Ruby libraries before (e.g. [JSON::Stream](https://github.com/dgraham/json-stream), [Yajl::FFI](https://github.com/dgraham/yajl-ffi)):*
+
+This gem will basically spare you the need to define you own callbacks (i.e. implement an actual JSON parser using `start_object`, `end_object`, `key`, `value`, etc.).
+
+
+*If you're new to this:*
+
 Streaming is useful for
-- big files that not fit in the memory (or you'd rather avoid the risk)
+- big files that do not fit in the memory (or you'd rather avoid the risk)
 - files read in chunks (e.g. arriving over network)
 - cases where you expect some issue with the file (e.g. losing connection to source, invalid data at some point) but would like to get as much data as possible anyway
 
-Performance:
+This gem is aimed at making streaming as easy and convenient as possible.
+
+*Performance:*
 
 The gem uses JSON::Stream's events in the background. It was chosen because it's a pure Ruby parser.
 A similar implementation can be done using the ~10 times faster Yajl::FFI gem that is dependent on the native YAJL library.
@@ -43,70 +51,76 @@ streamer = Json::Streamer::JsonStreamer.new(file_stream, 500)
 ```ruby
 # Get objects based on nesting level
 # Level zero will give you the full JSON, first level will give you data within full JSON object, etc.
-streamer.get(nesting_level:1).each do |object|
+streamer.get(nesting_level:1) do |object|
     p object
 end
 ```
 
+Input:
 ```json
 {
-    "object1": {},
+    "object1": "first_level_value",
     "object2": {}
 }
+```
 
-=>
-
-{}
-{}
+Output:
+```json
+> first_level_value
+> {}
 ```
 
 ```ruby
 # Get data based on key
-streamer.get(key:'key').each do |object|
+streamer.get(key:'desired_key') do |object|
     p object
 end
 ```
 
+Input:
 ```json
 {
     "obj1" : {
-        "key" : "value"
+        "desired_key" : "value1"
     },
-    "key" : "value",
+    "desired_key" : "value2",
     "obj2" : {
-        "key" : {
-            "key" : "value"
+        "desired_key" : {
+            "desired_key" : "value3"
         }
     }
 }
+```
 
-=>
-
-"value"
-"value"
-"value"
-{"key" : "value"}
+Output:
+```json
+> "value1"
+> "value2"
+> "value3"
+> {"key" : "value3"}
 ```
 
 ```ruby
 # You can also skip values if you'd only like to get objects and arrays
-streamer.get(nesting_level:1, yield_values:false).each do |object|
+streamer.get(nesting_level:1, yield_values:false) do |object|
     p object
 end
 ```
 
+Input:
 ```json
 {
     "obj1" : {},
     "key" : "value"
 }
-
-=>
-
-{}
 ```
 
-Check the unit tests for more examples.
+Output:
+```json
+> {}
+```
+
+Check the unit tests for more examples ([spec/streamer_spec.rb](https://github.com/thisismydesign/json-streamer/blob/master/spec/streamer_spec.rb)).
 
 ## Feedback
 
