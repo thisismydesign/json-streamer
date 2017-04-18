@@ -6,11 +6,11 @@ require 'json/streamer/version'
 Gem::Specification.new do |spec|
   spec.name          = "json-streamer"
   spec.version       = Json::Streamer::VERSION
-  spec.authors       = ["Csaba Apagyi"]
-  spec.email         = ["csapagyi@users.noreply.github.com"]
+  spec.authors       = ["thisismydesign"]
+  spec.email         = ["thisismydesign@users.noreply.github.com"]
 
   spec.summary       = %q{Utility to support JSON streaming allowing you to get data based on various criteria (key, nesting level, etc)}
-  spec.homepage      = "https://github.com/csapagyi/json-streamer"
+  spec.homepage      = "https://github.com/thisismydesign/json-streamer"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
@@ -18,9 +18,9 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
-  spec.add_development_dependency "bundler", "~> 1.12.a"
+  spec.add_development_dependency "bundler", "~> 1.14"
   spec.add_development_dependency "rake", "~> 10.0"
-  spec.add_development_dependency "rspec"
+  spec.add_development_dependency "rspec", "~> 3.0"
   spec.add_development_dependency "ndhash"
 
   spec.add_dependency "json-stream"
