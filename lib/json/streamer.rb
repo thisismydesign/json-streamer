@@ -24,7 +24,7 @@ module Json
 
       end
 
-      # Callbacks containing yield has be defined in the method called via block
+      # Callbacks containing `yield` have to be defined in the method called via block otherwise yield won't work
       def get(nesting_level:-1, key:nil, yield_values:true)
         yield_nesting_level = nesting_level
         wanted_key = key
