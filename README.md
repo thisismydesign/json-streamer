@@ -69,8 +69,8 @@ Input:
 
 Output:
 ```json
-> first_level_value
-> {}
+"first_level_value"
+{}
 ```
 
 #### Get data based on key
@@ -98,10 +98,10 @@ Input:
 
 Output:
 ```json
-> "value1"
-> "value2"
-> "value3"
-> {"desired_key" : "value3"}
+"value1"
+"value2"
+"value3"
+{"desired_key" : "value3"}
 ```
 
 #### Skip values if you'd only like to get objects and arrays
@@ -122,7 +122,7 @@ Input:
 
 Output:
 ```json
-> {}
+{}
 ```
 
 Check the unit tests for more examples ([spec/streamer_spec.rb](spec/streamer_spec.rb)).
