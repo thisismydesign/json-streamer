@@ -1,5 +1,8 @@
 # Json::Streamer
 
+[![Build Status](https://travis-ci.org/thisismydesign/json-streamer.svg?branch=master)](https://travis-ci.org/thisismydesign/json-streamer)
+[![Gem Version](https://badge.fury.io/rb/json-streamer.svg)](https://badge.fury.io/rb/json-streamer)
+
 Ruby utility that supports JSON streaming allowing you to get data based on various criteria (key, nesting level, etc).
 
 *If you've tried JSON streaming with other Ruby libraries before (e.g. [JSON::Stream](https://github.com/dgraham/json-stream), [Yajl::FFI](https://github.com/dgraham/yajl-ffi)):*
