@@ -43,13 +43,16 @@ Or install it yourself as:
 ```ruby
 require 'json/streamer'
 
+file_stream = File.open('data.json', 'r')
+
 # Get a JsonStreamer object that will parse file_stream by chunks of 500
 # Default chunk size in 1000
 streamer = Json::Streamer::JsonStreamer.new(file_stream, 500)
 ```
 
+#### Get objects based on nesting level
+
 ```ruby
-# Get objects based on nesting level
 # Level zero will give you the full JSON, first level will give you data within full JSON object, etc.
 streamer.get(nesting_level:1) do |object|
     p object
@@ -70,8 +73,9 @@ Output:
 > {}
 ```
 
+#### Get data based on key
+
 ```ruby
-# Get data based on key
 streamer.get(key:'desired_key') do |object|
     p object
 end
@@ -97,11 +101,12 @@ Output:
 > "value1"
 > "value2"
 > "value3"
-> {"key" : "value3"}
+> {"desired_key" : "value3"}
 ```
 
+#### Skip values if you'd only like to get objects and arrays
+
 ```ruby
-# You can also skip values if you'd only like to get objects and arrays
 streamer.get(nesting_level:1, yield_values:false) do |object|
     p object
 end
@@ -120,7 +125,7 @@ Output:
 > {}
 ```
 
-Check the unit tests for more examples ([spec/streamer_spec.rb](https://github.com/thisismydesign/json-streamer/blob/master/spec/streamer_spec.rb)).
+Check the unit tests for more examples ([spec/streamer_spec.rb](spec/streamer_spec.rb)).
 
 ## Feedback
 
