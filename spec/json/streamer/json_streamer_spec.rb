@@ -10,7 +10,7 @@ RSpec.describe Json::Streamer::JsonStreamer do
 
   describe '#get' do
 
-    context 'Get 0th level of empty JSON object' do
+    context '0th level of empty JSON object' do
       it 'should yield empty JSON object' do
 
         hash = {}
@@ -27,7 +27,7 @@ RSpec.describe Json::Streamer::JsonStreamer do
       end
     end
 
-    context 'Get first level from JSON' do
+    context '1st level from JSON' do
       it 'should yield objects within JSON object' do
 
         hash = {'object1':@example_hash, 'object2':@example_hash, 'object3':@example_hash}
@@ -46,7 +46,7 @@ RSpec.describe Json::Streamer::JsonStreamer do
       end
     end
 
-    context 'Get first level from JSON array' do
+    context '1st level from JSON array' do
       it 'should yield objects in array elements' do
 
         array = Array.new(10) {@example_hash}
@@ -100,7 +100,7 @@ RSpec.describe Json::Streamer::JsonStreamer do
       end
     end
 
-    context 'Get values' do
+    context 'Yield values enabled' do
       it 'should yield values from given level' do
 
         hash = {obj:@example_hash}
@@ -117,7 +117,7 @@ RSpec.describe Json::Streamer::JsonStreamer do
       end
     end
 
-    context 'Do not get values' do
+    context 'Yield values disabled' do
       it 'should not yield values from given level' do
 
         hash = {obj:@example_hash}
@@ -133,7 +133,7 @@ RSpec.describe Json::Streamer::JsonStreamer do
       end
     end
 
-    context 'Get data from flat JSON by key' do
+    context 'By key from flat JSON' do
       it 'should yield value within JSON object' do
 
         json_file_mock = StringIO.new(JSON.generate(@example_hash))
@@ -151,7 +151,7 @@ RSpec.describe Json::Streamer::JsonStreamer do
       end
     end
 
-    context 'Get data from multi level JSON by key' do
+    context 'By key from multi level JSON' do
       it 'should yield values within JSON object second level' do
 
         hash = {obj1:@example_hash, obj2:@example_hash, obj3:@example_hash}
@@ -170,7 +170,7 @@ RSpec.describe Json::Streamer::JsonStreamer do
       end
     end
 
-    context 'Get data from multi level JSON by key' do
+    context 'By key from multi level JSON' do
       it 'should yield values within JSON object from all levels the key occurs' do
 
         hash = {'obj1' => @example_hash, @example_key => @example_value}
@@ -189,7 +189,7 @@ RSpec.describe Json::Streamer::JsonStreamer do
       end
     end
 
-    context 'Get data from multi level JSON by key' do
+    context 'By key from multi level JSON' do
       it 'should yield values and objects as well within JSON object from all levels the key occurs' do
 
         hash = {'obj1' => @example_hash, @example_key => @example_value, 'obj2' => {@example_key => @example_hash}}
@@ -209,15 +209,15 @@ RSpec.describe Json::Streamer::JsonStreamer do
       end
     end
 
-    context 'JSON array' do
+    context '2nd level of multi-level JSON array' do
       it 'should yield array elements' do
 
-        hash = [@example_hash, @example_hash, @example_hash]
+        hash = [[@example_hash, @example_hash, @example_hash]]
         json_file_mock = StringIO.new(JSON.generate(hash))
         streamer = Json::Streamer::JsonStreamer.new(json_file_mock, 10)
 
         objects = []
-        streamer.get(nesting_level:1) do |object|
+        streamer.get(nesting_level:2) do |object|
           objects.push(object)
         end
 
