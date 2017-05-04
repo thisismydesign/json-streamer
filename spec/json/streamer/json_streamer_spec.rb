@@ -8,7 +8,7 @@ RSpec.describe Json::Streamer::JsonStreamer do
     @example_hash = {@example_key => @example_value}
   end
 
-  describe '#get_nesting_level' do
+  describe '#get' do
 
     context 'Get 0th level of empty JSON object' do
       it 'should yield empty JSON object' do
@@ -133,10 +133,6 @@ RSpec.describe Json::Streamer::JsonStreamer do
       end
     end
 
-  end
-
-  describe '#get_nesting_level' do
-
     context 'Get data from flat JSON by key' do
       it 'should yield value within JSON object' do
 
@@ -210,6 +206,25 @@ RSpec.describe Json::Streamer::JsonStreamer do
           expect(element).to eq(@example_value)
         end
         expect(objects[3]).to eq(@example_hash)
+      end
+    end
+
+    context 'JSON array' do
+      it 'should yield array elements' do
+
+        hash = [@example_hash, @example_hash, @example_hash]
+        json_file_mock = StringIO.new(JSON.generate(hash))
+        streamer = Json::Streamer::JsonStreamer.new(json_file_mock, 10)
+
+        objects = []
+        streamer.get(nesting_level:1) do |object|
+          objects.push(object)
+        end
+
+        expect(objects.length).to eq(3)
+        objects[0..2].each do |element|
+          expect(element).to eq(@example_hash)
+        end
       end
     end
 
