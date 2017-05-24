@@ -26,6 +26,8 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rspec", "~> 3.0"
   spec.add_development_dependency "coveralls"
   spec.add_development_dependency "ndhash"
+  spec.add_development_dependency "sys-proctable"
+  spec.add_development_dependency "get_process_mem"
 
   spec.add_dependency "json-stream"
 end
