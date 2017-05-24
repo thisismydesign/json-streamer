@@ -260,8 +260,25 @@ RSpec.describe Json::Streamer::JsonStreamer do
         end
 
         expect(objects.length).to eq(1)
+        expect(objects[0]).to eq([@example_value, @example_value])
+      end
+    end
+
+    context '1th level of JSON array' do
+      it 'should yield array elements' do
+
+        hash = [@example_value, @example_value]
+        json_file_mock = StringIO.new(JSON.generate(hash))
+        streamer = Json::Streamer::JsonStreamer.new(json_file_mock, 10)
+
+        objects = []
+        streamer.get(nesting_level:1) do |object|
+          objects.push(object)
+        end
+
+        expect(objects.length).to eq(2)
         objects.each do |element|
-          expect(element).to eq([@example_value, @example_value])
+          expect(element).to eq(@example_value)
         end
       end
     end

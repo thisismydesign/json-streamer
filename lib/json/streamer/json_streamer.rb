@@ -20,7 +20,6 @@ module Json
         @parser.start_object {start_object}
         @parser.start_array {start_array}
         @parser.key {|k| key(k)}
-
       end
 
       # Callbacks containing `yield` have to be defined in the method called via block otherwise yield won't work
@@ -30,7 +29,11 @@ module Json
 
         @parser.value do |v|
           if @aggregator[@current_nesting_level].kind_of? Array
-            @aggregator[@current_nesting_level] << v
+            if yield_values and yield_value?(yield_nesting_level)
+              yield v
+            else
+              @aggregator[@current_nesting_level] << v
+            end
           else
             @aggregator[@current_nesting_level][@current_key] = v
             if yield_values and yield_value?(yield_nesting_level, wanted_key)
@@ -70,8 +73,8 @@ module Json
         @current_nesting_level.eql? yield_nesting_level or (not wanted_key.nil? and wanted_key == @temp_aggregator_keys[@current_nesting_level-1])
       end
 
-      def yield_value?(yield_nesting_level, wanted_key)
-        (@current_nesting_level + 1).eql? yield_nesting_level or wanted_key == @current_key
+      def yield_value?(yield_nesting_level, wanted_key = nil)
+        (@current_nesting_level + 1).eql? yield_nesting_level or (not wanted_key.nil? and wanted_key == @current_key)
       end
 
       def start_object
