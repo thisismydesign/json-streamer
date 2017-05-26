@@ -68,6 +68,26 @@ RSpec.describe Json::Streamer::JsonStreamer do
       end
     end
 
+    context '1st level from input' do
+      it 'should yield objects within JSON object' do
+
+        hash = {'object1':@example_hash, 'object2':@example_hash, 'object3':@example_hash}
+        streamer = Json::Streamer::JsonStreamer.new
+
+        objects = []
+        streamer.get(nesting_level:1) do |object|
+          objects.push(object)
+        end
+
+        streamer.parser << JSON.generate(hash)
+
+        expect(objects.length).to eq(hash.length)
+        objects.each do |element|
+          expect(element).to eq(@example_hash)
+        end
+      end
+    end
+
     context 'JSONs with various nesting level and number of objects per level' do
       it 'should yield all objects on desired level (checking number of yielded objects)' do
 
