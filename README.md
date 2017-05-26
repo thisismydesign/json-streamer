@@ -130,6 +130,28 @@ Output:
 {}
 ```
 
+#### EventMachine-style input
+
+```ruby
+require 'json/streamer'
+
+# Get a JsonStreamer object that provides access to the parser
+# but does not start processing immediately
+streamer = Json::Streamer::JsonStreamer.new
+
+streamer.get(nesting_level:1) do |object|
+    p object
+end
+```
+
+Then later in your EventMachine handler:
+
+```ruby
+  def receive_data(data)
+    streamer.parser << data
+  end
+```
+
 Check the unit tests for more examples ([spec/streamer_spec.rb](spec/streamer_spec.rb)).
 
 ## Feedback

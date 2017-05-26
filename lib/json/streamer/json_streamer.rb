@@ -5,8 +5,9 @@ module Json
     class JsonStreamer
 
       attr_reader :aggregator
+      attr_reader :parser
 
-      def initialize(file_io, chunk_size = 1000)
+      def initialize(file_io = nil, chunk_size = 1000)
         @parser = JSON::Stream::Parser.new
 
         @file_io = file_io
@@ -64,8 +65,10 @@ module Json
           @current_nesting_level -= 1
         end
 
-        @file_io.each(@chunk_size) do |chunk|
-          @parser << chunk
+        if @file_io
+          @file_io.each(@chunk_size) do |chunk|
+            @parser << chunk
+          end
         end
       end
 
