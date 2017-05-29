@@ -130,7 +130,7 @@ Output:
 {}
 ```
 
-#### EventMachine-style input
+#### EventMachine-style input (since 1.1.0)
 
 ```ruby
 # Get a JsonStreamer object that provides access to the parser
