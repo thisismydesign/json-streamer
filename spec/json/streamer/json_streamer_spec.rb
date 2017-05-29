@@ -9,6 +9,7 @@ RSpec.describe Json::Streamer::JsonStreamer do
     @example_key = 'key'
     @example_value = 'value'
     @example_hash = {@example_key => @example_value}
+    @chunk_size = 10
   end
 
   describe '#get' do
@@ -18,7 +19,7 @@ RSpec.describe Json::Streamer::JsonStreamer do
 
         hash = {}
         json_file_mock = StringIO.new(JSON.generate(hash))
-        streamer = Json::Streamer::JsonStreamer.new(json_file_mock, 10)
+        streamer = Json::Streamer::JsonStreamer.new(json_file_mock, @chunk_size)
 
         objects = []
         streamer.get(nesting_level:0) do |object|
@@ -35,7 +36,7 @@ RSpec.describe Json::Streamer::JsonStreamer do
 
         hash = {'object1':@example_hash, 'object2':@example_hash, 'object3':@example_hash}
         json_file_mock = StringIO.new(JSON.generate(hash))
-        streamer = Json::Streamer::JsonStreamer.new(json_file_mock, 10)
+        streamer = Json::Streamer::JsonStreamer.new(json_file_mock, @chunk_size)
 
         objects = []
         streamer.get(nesting_level:1) do |object|
@@ -54,7 +55,7 @@ RSpec.describe Json::Streamer::JsonStreamer do
 
         array = Array.new(10) {@example_hash}
         json_file_mock = StringIO.new(JSON.generate(array))
-        streamer = Json::Streamer::JsonStreamer.new(json_file_mock, 10)
+        streamer = Json::Streamer::JsonStreamer.new(json_file_mock, @chunk_size)
 
         objects = []
         streamer.get(nesting_level:1) do |object|
@@ -99,9 +100,8 @@ RSpec.describe Json::Streamer::JsonStreamer do
           objects.push(object)
         end
 
-        chunk_size = 10
         json_file_mock = StringIO.new(JSON.generate(hash))
-        json_file_mock.each(chunk_size) do |chunk|
+        json_file_mock.each(@chunk_size) do |chunk|
           streamer.parser << chunk
         end
 
@@ -122,7 +122,7 @@ RSpec.describe Json::Streamer::JsonStreamer do
         (1..max_levels).each do |max_level|
           hash = NDHash.generate(levels: max_level, values_per_level: 0, hashes_per_level: entries_per_level)
           json_file_mock = StringIO.new(JSON.generate(hash))
-          streamer = Json::Streamer::JsonStreamer.new(json_file_mock, 10)
+          streamer = Json::Streamer::JsonStreamer.new(json_file_mock, @chunk_size)
 
           objects = []
           streamer.get(nesting_level:max_level-1) do |object|
@@ -139,7 +139,7 @@ RSpec.describe Json::Streamer::JsonStreamer do
 
         hash = {obj:@example_hash}
         json_file_mock = StringIO.new(JSON.generate(hash))
-        streamer = Json::Streamer::JsonStreamer.new(json_file_mock, 10)
+        streamer = Json::Streamer::JsonStreamer.new(json_file_mock, @chunk_size)
 
         streamer.get(nesting_level:0) {}
 
@@ -152,7 +152,7 @@ RSpec.describe Json::Streamer::JsonStreamer do
 
         hash = {obj:@example_hash}
         json_file_mock = StringIO.new(JSON.generate(hash))
-        streamer = Json::Streamer::JsonStreamer.new(json_file_mock, 10)
+        streamer = Json::Streamer::JsonStreamer.new(json_file_mock, @chunk_size)
 
         objects = []
         streamer.get(nesting_level:2) do |object|
@@ -169,7 +169,7 @@ RSpec.describe Json::Streamer::JsonStreamer do
 
         hash = {obj:@example_hash}
         json_file_mock = StringIO.new(JSON.generate(hash))
-        streamer = Json::Streamer::JsonStreamer.new(json_file_mock, 10)
+        streamer = Json::Streamer::JsonStreamer.new(json_file_mock, @chunk_size)
 
         objects = []
         streamer.get(nesting_level:2, yield_values:false) do |object|
@@ -184,7 +184,7 @@ RSpec.describe Json::Streamer::JsonStreamer do
       it 'should yield value within JSON object' do
 
         json_file_mock = StringIO.new(JSON.generate(@example_hash))
-        streamer = Json::Streamer::JsonStreamer.new(json_file_mock, 10)
+        streamer = Json::Streamer::JsonStreamer.new(json_file_mock, @chunk_size)
 
         objects = []
         streamer.get(key:@example_key) do |object|
@@ -203,7 +203,7 @@ RSpec.describe Json::Streamer::JsonStreamer do
 
         hash = {obj1:@example_hash, obj2:@example_hash, obj3:@example_hash}
         json_file_mock = StringIO.new(JSON.generate(hash))
-        streamer = Json::Streamer::JsonStreamer.new(json_file_mock, 10)
+        streamer = Json::Streamer::JsonStreamer.new(json_file_mock, @chunk_size)
 
         objects = []
         streamer.get(key:@example_key) do |object|
@@ -222,7 +222,7 @@ RSpec.describe Json::Streamer::JsonStreamer do
 
         hash = {'obj1' => @example_hash, @example_key => @example_value}
         json_file_mock = StringIO.new(JSON.generate(hash))
-        streamer = Json::Streamer::JsonStreamer.new(json_file_mock, 10)
+        streamer = Json::Streamer::JsonStreamer.new(json_file_mock, @chunk_size)
 
         objects = []
         streamer.get(key:@example_key) do |object|
@@ -241,7 +241,7 @@ RSpec.describe Json::Streamer::JsonStreamer do
 
         hash = {'obj1' => @example_hash, @example_key => @example_value, 'obj2' => {@example_key => @example_hash}}
         json_file_mock = StringIO.new(JSON.generate(hash))
-        streamer = Json::Streamer::JsonStreamer.new(json_file_mock, 10)
+        streamer = Json::Streamer::JsonStreamer.new(json_file_mock, @chunk_size)
 
         objects = []
         streamer.get(key:@example_key) do |object|
@@ -261,7 +261,7 @@ RSpec.describe Json::Streamer::JsonStreamer do
 
         hash = [[@example_hash, @example_hash, @example_hash]]
         json_file_mock = StringIO.new(JSON.generate(hash))
-        streamer = Json::Streamer::JsonStreamer.new(json_file_mock, 10)
+        streamer = Json::Streamer::JsonStreamer.new(json_file_mock, @chunk_size)
 
         objects = []
         streamer.get(nesting_level:2) do |object|
@@ -280,7 +280,7 @@ RSpec.describe Json::Streamer::JsonStreamer do
 
         hash = [[@example_hash, @example_hash, @example_hash]]
         json_file_mock = StringIO.new(JSON.generate(hash))
-        streamer = Json::Streamer::JsonStreamer.new(json_file_mock, 10)
+        streamer = Json::Streamer::JsonStreamer.new(json_file_mock, @chunk_size)
 
         objects = []
         streamer.get(nesting_level:1) do |object|
@@ -299,7 +299,7 @@ RSpec.describe Json::Streamer::JsonStreamer do
 
         hash = [@example_value, @example_value]
         json_file_mock = StringIO.new(JSON.generate(hash))
-        streamer = Json::Streamer::JsonStreamer.new(json_file_mock, 10)
+        streamer = Json::Streamer::JsonStreamer.new(json_file_mock, @chunk_size)
 
         objects = []
         streamer.get(nesting_level:0) do |object|
@@ -316,7 +316,7 @@ RSpec.describe Json::Streamer::JsonStreamer do
 
         hash = [@example_value, @example_value]
         json_file_mock = StringIO.new(JSON.generate(hash))
-        streamer = Json::Streamer::JsonStreamer.new(json_file_mock, 10)
+        streamer = Json::Streamer::JsonStreamer.new(json_file_mock, @chunk_size)
 
         objects = []
         streamer.get(nesting_level:1) do |object|
@@ -357,7 +357,7 @@ RSpec.describe Json::Streamer::JsonStreamer do
 
         memory_consumption_before_parsing = GetProcessMem.new.mb
 
-        streamer = Json::Streamer::JsonStreamer.new(json_file_mock, 10)
+        streamer = Json::Streamer::JsonStreamer.new(json_file_mock, @chunk_size)
         object_count = 0
         streamer.get(nesting_level:1) do |object|
           expect(object).to eq(@example_hash)
