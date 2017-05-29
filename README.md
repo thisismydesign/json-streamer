@@ -133,8 +133,6 @@ Output:
 #### EventMachine-style input
 
 ```ruby
-require 'json/streamer'
-
 # Get a JsonStreamer object that provides access to the parser
 # but does not start processing immediately
 streamer = Json::Streamer::JsonStreamer.new
@@ -147,9 +145,9 @@ end
 Then later in your EventMachine handler:
 
 ```ruby
-  def receive_data(data)
+def receive_data(data)
     streamer.parser << data
-  end
+end
 ```
 
 Check the unit tests for more examples ([spec/streamer_spec.rb](spec/streamer_spec.rb)).

@@ -68,7 +68,7 @@ RSpec.describe Json::Streamer::JsonStreamer do
       end
     end
 
-    context '1st level from input' do
+    context '1st level from EventMachine style input' do
       it 'should yield objects within JSON object' do
 
         hash = {'object1':@example_hash, 'object2':@example_hash, 'object3':@example_hash}
