@@ -122,7 +122,7 @@ module Json
         if array_level?(previous_level)
           @aggregator[previous_level] << @aggregator[@current_level]
         else
-          @aggregator[previous_level][@aggregator_keys[previous_level]] = @aggregator[@current_level]
+          @aggregator[previous_level][previous_key] = @aggregator[@current_level]
         end
 
         @aggregator.delete(@current_level)
@@ -137,7 +137,7 @@ module Json
       end
 
       def previous_key
-        @aggregator_keys[@current_level - 1]
+        @aggregator_keys[previous_level]
       end
     end
   end
