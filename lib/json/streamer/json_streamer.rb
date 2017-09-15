@@ -110,7 +110,8 @@ module Json
       end
 
       def merge_up
-        return if @current_nesting_level == 0
+        return if @current_nesting_level.zero?
+
         if array_level?(previous_nesting_level)
           @aggregator[previous_nesting_level] << @aggregator[@current_nesting_level]
         else
