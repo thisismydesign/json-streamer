@@ -294,6 +294,22 @@ RSpec.describe Json::Streamer::JsonStreamer do
       end
     end
 
+    context 'values in arrays' do
+      it 'does not have keys assigned (Issue#7)' do
+
+        hash = {items:[[[@example_hash]]]}
+        json_file_mock = StringIO.new(JSON.generate(hash))
+        streamer = Json::Streamer::JsonStreamer.new(json_file_mock, @chunk_size)
+
+        objects = []
+        streamer.get(key: 'items') do |object|
+          objects.push(object)
+        end
+
+        expect(objects.length).to eq(1)
+      end
+    end
+
     context '0th level of JSON array' do
       it 'should yield whole array' do
 
@@ -373,7 +389,5 @@ RSpec.describe Json::Streamer::JsonStreamer do
         p "With JSON::Streamer memory consumption did not increase significantly during processing."
       end
     end
-
   end
-
 end

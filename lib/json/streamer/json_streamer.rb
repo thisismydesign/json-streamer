@@ -87,7 +87,7 @@ module Json
       end
 
       def start_array
-        @temp_aggregator_keys[@current_nesting_level] = @current_key
+        @temp_aggregator_keys[@current_nesting_level] = nil
         @current_nesting_level += 1
         @aggregator[@current_nesting_level] = []
       end
