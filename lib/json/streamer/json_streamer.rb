@@ -13,7 +13,7 @@ module Json
         @file_io = file_io
         @chunk_size = chunk_size
 
-        @current_nesting_level = -1
+        @current_level = -1
         @current_key = nil
         @aggregator = {}
         @aggregator_keys = {}
@@ -29,14 +29,14 @@ module Json
         wanted_key = key
 
         @parser.value do |v|
-          if array_level?(@current_nesting_level)
+          if array_level?(@current_level)
             if yield_value?(yield_values, yield_nesting_level)
               yield v
             else
-              @aggregator[@current_nesting_level] << v
+              @aggregator[@current_level] << v
             end
           else
-            @aggregator[@current_nesting_level][@current_key] = v
+            @aggregator[@current_level][@current_key] = v
             if yield_value?(yield_values, yield_nesting_level, wanted_key)
               yield v
             end
@@ -45,35 +45,35 @@ module Json
 
         @parser.end_object do
           if yield_object?(yield_nesting_level, wanted_key)
-            yield @aggregator[@current_nesting_level].clone
+            yield @aggregator[@current_level].clone
             reset_current_level(Hash.new)
           else
             merge_up
           end
 
-          @current_nesting_level -= 1
+          @current_level -= 1
         end
 
         @parser.end_array do
           if yield_object?(yield_nesting_level, wanted_key)
-            yield @aggregator[@current_nesting_level].clone
+            yield @aggregator[@current_level].clone
             reset_current_level(Array.new)
           else
             merge_up
           end
 
-          @current_nesting_level -= 1
+          @current_level -= 1
         end
 
         @file_io.each(@chunk_size) { |chunk| @parser << chunk } if @file_io
       end
 
       def yield_object?(yield_nesting_level, wanted_key)
-        @current_nesting_level.eql? yield_nesting_level or (not wanted_key.nil? and wanted_key == @aggregator_keys[@current_nesting_level-1])
+        @current_level.eql? yield_nesting_level or (not wanted_key.nil? and wanted_key == @aggregator_keys[@current_level-1])
       end
 
       def yield_value?(yield_values, yield_nesting_level, wanted_key = nil)
-        yield_values and ((next_nesting_level).eql?(yield_nesting_level) or (not wanted_key.nil? and wanted_key == @current_key))
+        yield_values and ((next_level).eql?(yield_nesting_level) or (not wanted_key.nil? and wanted_key == @current_key))
       end
 
       def start_object
@@ -86,17 +86,17 @@ module Json
 
       def new_level(type)
         set_aggregator_key
-        @current_nesting_level += 1
+        @current_level += 1
         reset_current_level(type)
       end
 
       def reset_current_level(type)
-        @aggregator[@current_nesting_level] = type
+        @aggregator[@current_level] = type
       end
 
       def set_aggregator_key
-        reset_current_key if array_level?(@current_nesting_level)
-        @aggregator_keys[@current_nesting_level] = @current_key
+        reset_current_key if array_level?(@current_level)
+        @aggregator_keys[@current_level] = @current_key
       end
 
       def reset_current_key
@@ -112,23 +112,23 @@ module Json
       end
 
       def merge_up
-        return if @current_nesting_level.zero?
+        return if @current_level.zero?
 
-        if array_level?(previous_nesting_level)
-          @aggregator[previous_nesting_level] << @aggregator[@current_nesting_level]
+        if array_level?(previous_level)
+          @aggregator[previous_level] << @aggregator[@current_level]
         else
-          @aggregator[previous_nesting_level][@aggregator_keys[previous_nesting_level]] = @aggregator[@current_nesting_level]
+          @aggregator[previous_level][@aggregator_keys[previous_level]] = @aggregator[@current_level]
         end
 
-        @aggregator.delete(@current_nesting_level)
+        @aggregator.delete(@current_level)
       end
 
-      def previous_nesting_level
-        @current_nesting_level - 1
+      def previous_level
+        @current_level - 1
       end
 
-      def next_nesting_level
-        @current_nesting_level + 1
+      def next_level
+        @current_level + 1
       end
     end
   end
