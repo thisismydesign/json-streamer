@@ -30,14 +30,14 @@ module Json
 
         @parser.value do |v|
           if array_level?(@current_nesting_level)
-            if yield_values and yield_value?(yield_nesting_level)
+            if yield_value?(yield_values, yield_nesting_level)
               yield v
             else
               @aggregator[@current_nesting_level] << v
             end
           else
             @aggregator[@current_nesting_level][@current_key] = v
-            if yield_values and yield_value?(yield_nesting_level, wanted_key)
+            if yield_value?(yield_values, yield_nesting_level, wanted_key)
               yield v
             end
           end
@@ -72,8 +72,8 @@ module Json
         @current_nesting_level.eql? yield_nesting_level or (not wanted_key.nil? and wanted_key == @aggregator_keys[@current_nesting_level-1])
       end
 
-      def yield_value?(yield_nesting_level, wanted_key = nil)
-        (@current_nesting_level + 1).eql? yield_nesting_level or (not wanted_key.nil? and wanted_key == @current_key)
+      def yield_value?(yield_values, yield_nesting_level, wanted_key = nil)
+        yield_values and ((next_nesting_level).eql?(yield_nesting_level) or (not wanted_key.nil? and wanted_key == @current_key))
       end
 
       def start_object
@@ -125,6 +125,10 @@ module Json
 
       def previous_nesting_level
         @current_nesting_level - 1
+      end
+
+      def next_nesting_level
+        @current_nesting_level + 1
       end
     end
   end
