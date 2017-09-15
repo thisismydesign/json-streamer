@@ -62,11 +62,13 @@ module Json
       end
 
       def value(value, yield_values, yield_level, key)
-        yield_value = yield_value?(yield_values, yield_level, key)
-        yield value if yield_value
+        yield value if yield_value?(yield_values, yield_level, key)
+        add_value(value)
+      end
 
+      def add_value(value)
         if array_level?(@current_level)
-          @aggregator[@current_level] << value unless yield_value
+          @aggregator[@current_level] << value
         else
           @aggregator[@current_level][@current_key] = value
         end

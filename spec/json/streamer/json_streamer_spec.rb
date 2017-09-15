@@ -408,6 +408,24 @@ RSpec.describe Json::Streamer::JsonStreamer do
           end
         end
       end
+
+      context 'Issue #8 values consumed' do
+        let(:hash) { {items:{nested_items:[@example_value, @example_value, @example_value]}} }
+        it 'does not consume values' do
+          json_file_mock = StringIO.new(JSON.generate(hash))
+          streamer = Json::Streamer::JsonStreamer.new(json_file_mock, @chunk_size)
+
+          streamer.get(nesting_level:3, key: 'items') do |object|
+            yielded_objects.push(object)
+          end
+
+          expect(yielded_objects.length).to eq(4)
+          yielded_objects[0..2].each do |element|
+            expect(element).to eq(@example_value)
+          end
+          expect(yielded_objects[3]).to eq({'nested_items' => [@example_value, @example_value, @example_value]})
+        end
+      end
     end
 
     context 'Big JSON array parsed with JSON::Stream', :speed => 'slow', :type => 'memory' do
