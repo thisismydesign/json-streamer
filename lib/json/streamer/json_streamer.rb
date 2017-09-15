@@ -81,12 +81,12 @@ module Json
         @current_level -= 1
       end
 
-      def yield_object?(yield_nesting_level, wanted_key)
-        @current_level.eql? yield_nesting_level or (not wanted_key.nil? and wanted_key == @aggregator_keys[@current_level-1])
+      def yield_object?(yield_level, wanted_key)
+        @current_level.eql? yield_level or (not wanted_key.nil? and wanted_key == @aggregator_keys[@current_level-1])
       end
 
-      def yield_value?(yield_values, yield_nesting_level, wanted_key = nil)
-        yield_values and ((next_level).eql?(yield_nesting_level) or (not wanted_key.nil? and wanted_key == @current_key))
+      def yield_value?(yield_values, yield_level, wanted_key = nil)
+        yield_values and ((next_level).eql?(yield_level) or (not wanted_key.nil? and wanted_key == @current_key))
       end
 
       def new_level(type)
