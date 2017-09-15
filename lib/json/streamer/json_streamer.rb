@@ -29,21 +29,15 @@ module Json
         @yield_values = yield_values
 
         @parser.value do |v|
-          value(v) do |desired_object|
-            yield desired_object
-          end
+          value(v) { |desired_object| yield desired_object }
         end
 
         @parser.end_object do
-          end_level(Hash.new) do |desired_object|
-            yield desired_object
-          end
+          end_level(Hash.new) { |desired_object| yield desired_object }
         end
 
         @parser.end_array do
-          end_level(Array.new) do |desired_object|
-            yield desired_object
-          end
+          end_level(Array.new) { |desired_object| yield desired_object }
         end
 
         @file_io.each(@chunk_size) { |chunk| @parser << chunk } if @file_io
