@@ -61,6 +61,7 @@ module Json
       end
 
       def value(value, yield_values, yield_level)
+        reset_current_key if array_level?(@current_level)
         yield value if yield_value?(yield_values, yield_level)
         add_value(value)
       end
@@ -93,6 +94,7 @@ module Json
       end
 
       def new_level(type)
+        reset_current_key if array_level?(@current_level)
         set_aggregator_key
         @current_level += 1
         reset_current_level(type)
@@ -103,7 +105,6 @@ module Json
       end
 
       def set_aggregator_key
-        reset_current_key if array_level?(@current_level)
         @aggregator_keys[@current_level] = @current_key
       end
 

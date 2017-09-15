@@ -381,9 +381,9 @@ RSpec.describe Json::Streamer::JsonStreamer do
         end
 
         context 'keys pointing to array' do
-          let(:hash) { {items:{nested_items:[@example_hash, @example_hash, @example_hash]}} }
+          let(:hash) { {items:{nested_items:[@example_hash, @example_value, @example_hash]}} }
 
-          it 'yields each element of array' do
+          it 'yields array' do
             json_file_mock = StringIO.new(JSON.generate(hash))
             streamer = Json::Streamer::JsonStreamer.new(json_file_mock, @chunk_size)
 
@@ -392,7 +392,7 @@ RSpec.describe Json::Streamer::JsonStreamer do
             end
 
             expect(yielded_objects.length).to eq(1)
-            expect(yielded_objects[0]).to eq([@example_hash, @example_hash, @example_hash])
+            expect(yielded_objects[0]).to eq([@example_hash, @example_value, @example_hash])
           end
 
           it 'keeps key pointing to arrays' do
@@ -404,13 +404,14 @@ RSpec.describe Json::Streamer::JsonStreamer do
             end
 
             expect(yielded_objects.length).to eq(1)
-            expect(yielded_objects[0]).to eq({'nested_items' => [@example_hash, @example_hash, @example_hash]})
+            expect(yielded_objects[0]).to eq({'nested_items' => [@example_hash, @example_value, @example_hash]})
           end
         end
       end
 
       context 'Issue #8 values consumed' do
         let(:hash) { {items:{nested_items:[@example_value, @example_value, @example_value]}} }
+
         it 'does not consume values' do
           json_file_mock = StringIO.new(JSON.generate(hash))
           streamer = Json::Streamer::JsonStreamer.new(json_file_mock, @chunk_size)
@@ -424,6 +425,22 @@ RSpec.describe Json::Streamer::JsonStreamer do
             expect(element).to eq(@example_value)
           end
           expect(yielded_objects[3]).to eq({'nested_items' => [@example_value, @example_value, @example_value]})
+        end
+      end
+
+      context 'nesting_level and key pointing to the same object' do
+        let(:hash) { {items:{nested_items:[@example_value, @example_value, @example_value]}} }
+
+        it 'yields the object once' do
+          json_file_mock = StringIO.new(JSON.generate(hash))
+          streamer = Json::Streamer::JsonStreamer.new(json_file_mock, @chunk_size)
+
+          streamer.get(key: 'nested_items', nesting_level:2) do |object|
+            yielded_objects.push(object)
+          end
+
+          expect(yielded_objects.length).to eq(1)
+          expect(yielded_objects[0]).to eq([@example_value, @example_value, @example_value])
         end
       end
     end
