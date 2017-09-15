@@ -65,11 +65,7 @@ module Json
           @current_nesting_level -= 1
         end
 
-        if @file_io
-          @file_io.each(@chunk_size) do |chunk|
-            @parser << chunk
-          end
-        end
+        @file_io.each(@chunk_size) { |chunk| @parser << chunk } if @file_io
       end
 
       def yield_object?(yield_nesting_level, wanted_key)
