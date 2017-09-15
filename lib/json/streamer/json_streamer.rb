@@ -68,20 +68,24 @@ module Json
         @file_io.each(@chunk_size) { |chunk| @parser << chunk } if @file_io
       end
 
-      def yield_object?(yield_nesting_level, wanted_key)
-        @current_level.eql? yield_nesting_level or (not wanted_key.nil? and wanted_key == @aggregator_keys[@current_level-1])
-      end
-
-      def yield_value?(yield_values, yield_nesting_level, wanted_key = nil)
-        yield_values and ((next_level).eql?(yield_nesting_level) or (not wanted_key.nil? and wanted_key == @current_key))
-      end
-
       def start_object
         new_level(Hash.new)
       end
 
       def start_array
         new_level(Array.new)
+      end
+
+      def key(k)
+        @current_key = k
+      end
+
+      def yield_object?(yield_nesting_level, wanted_key)
+        @current_level.eql? yield_nesting_level or (not wanted_key.nil? and wanted_key == @aggregator_keys[@current_level-1])
+      end
+
+      def yield_value?(yield_values, yield_nesting_level, wanted_key = nil)
+        yield_values and ((next_level).eql?(yield_nesting_level) or (not wanted_key.nil? and wanted_key == @current_key))
       end
 
       def new_level(type)
@@ -105,10 +109,6 @@ module Json
 
       def array_level?(nesting_level)
         @aggregator[nesting_level].is_a?(Array)
-      end
-
-      def key(k)
-        @current_key = k
       end
 
       def merge_up
