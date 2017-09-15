@@ -62,15 +62,13 @@ module Json
       end
 
       def value(value, yield_values, yield_level, key)
+        yield_value = yield_value?(yield_values, yield_level, key)
+        yield value if yield_value
+
         if array_level?(@current_level)
-          if yield_value?(yield_values, yield_level)
-            yield value
-          else
-            @aggregator[@current_level] << value
-          end
+          @aggregator[@current_level] << value unless yield_value
         else
           @aggregator[@current_level][@current_key] = value
-          yield value if yield_value?(yield_values, yield_level, key)
         end
       end
 
@@ -89,7 +87,7 @@ module Json
         @current_level.eql? yield_level or (not wanted_key.nil? and wanted_key == @aggregator_keys[@current_level-1])
       end
 
-      def yield_value?(yield_values, yield_level, wanted_key = nil)
+      def yield_value?(yield_values, yield_level, wanted_key)
         yield_values and ((next_level).eql?(yield_level) or (not wanted_key.nil? and wanted_key == @current_key))
       end
 
