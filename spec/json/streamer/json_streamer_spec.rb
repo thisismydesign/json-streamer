@@ -2,14 +2,33 @@ require 'spec_helper'
 require 'json/stream'
 require 'get_process_mem'
 
+DEBUG = false
+
+def highlight(msg)
+  puts("\n#{'#' * 10} #{msg} #{'#' * 10}\n\n")
+  yield
+  puts("\n#{'#' * 8} #{msg} END #{'#' * 8}\n\n")
+end
 
 RSpec.describe Json::Streamer::JsonStreamer do
 
-  before(:each) do
+  before do
     @example_key = 'key'
     @example_value = 'value'
     @example_hash = {@example_key => @example_value}
     @chunk_size = 10
+  end
+
+  before do
+    highlight('INPUT') do
+      puts JSON.pretty_generate(hash) if defined?(hash)
+    end if DEBUG
+  end
+
+  after do
+    highlight('OUTPUT') do
+      puts JSON.pretty_generate(yielded_objects) if defined?(yielded_objects)
+    end if DEBUG
   end
 
   describe '#get' do
@@ -294,22 +313,6 @@ RSpec.describe Json::Streamer::JsonStreamer do
       end
     end
 
-    context 'values in arrays' do
-      it 'does not have keys assigned (Issue#7)' do
-
-        hash = {items:[[[@example_hash]]]}
-        json_file_mock = StringIO.new(JSON.generate(hash))
-        streamer = Json::Streamer::JsonStreamer.new(json_file_mock, @chunk_size)
-
-        objects = []
-        streamer.get(key: 'items') do |object|
-          objects.push(object)
-        end
-
-        expect(objects.length).to eq(1)
-      end
-    end
-
     context '0th level of JSON array' do
       it 'should yield whole array' do
 
@@ -387,6 +390,67 @@ RSpec.describe Json::Streamer::JsonStreamer do
         p "Memory consumption before and after parsing: #{memory_consumption_before_parsing.round} MB -  #{memory_consumption_after_parsing.round} MB"
         expect(memory_consumption_after_parsing).to be < 1.1 * memory_consumption_before_parsing
         p "With JSON::Streamer memory consumption did not increase significantly during processing."
+      end
+    end
+
+    context 'issues' do
+      let(:yielded_objects) { [] }
+
+      context 'Issue #7' do
+        context 'key pointing to nested array' do
+          let(:hash) { {items:[[[@example_hash, @example_hash, @example_hash]]]} }
+
+          it 'does not yield trailing empty arrays' do
+            json_file_mock = StringIO.new(JSON.generate(hash))
+            streamer = Json::Streamer::JsonStreamer.new(json_file_mock, @chunk_size)
+
+            streamer.get(key: 'items') do |object|
+              yielded_objects.push(object)
+            end
+
+            expect(yielded_objects.length).to eq(1)
+          end
+
+          it 'yields nested arrays with the correct nesting' do
+            json_file_mock = StringIO.new(JSON.generate(hash))
+            streamer = Json::Streamer::JsonStreamer.new(json_file_mock, @chunk_size)
+
+            streamer.get(key: 'items') do |object|
+              yielded_objects.push(object)
+            end
+
+            expect(yielded_objects.length).to eq(1)
+            expect(yielded_objects[0]).to eq([[[@example_hash, @example_hash, @example_hash]]])
+          end
+        end
+
+        context 'keys pointing to array' do
+          let(:hash) { {items:{nested_items:[@example_hash, @example_hash, @example_hash]}} }
+
+          it 'yields each element of array' do
+            json_file_mock = StringIO.new(JSON.generate(hash))
+            streamer = Json::Streamer::JsonStreamer.new(json_file_mock, @chunk_size)
+
+            streamer.get(key: 'nested_items') do |object|
+              yielded_objects.push(object)
+            end
+
+            expect(yielded_objects.length).to eq(1)
+            expect(yielded_objects[0]).to eq([@example_hash, @example_hash, @example_hash])
+          end
+
+          it 'keeps key pointing to arrays' do
+            json_file_mock = StringIO.new(JSON.generate(hash))
+            streamer = Json::Streamer::JsonStreamer.new(json_file_mock, @chunk_size)
+
+            streamer.get(key: 'items') do |object|
+              yielded_objects.push(object)
+            end
+
+            expect(yielded_objects.length).to eq(1)
+            expect(yielded_objects[0]).to eq({'nested_items' => [@example_hash, @example_hash, @example_hash]})
+          end
+        end
       end
     end
   end
