@@ -86,7 +86,7 @@ module Json
       end
 
       def yield_object?(yield_level, wanted_key)
-        @current_level.eql? yield_level or (not wanted_key.nil? and wanted_key == @aggregator_keys[@current_level-1])
+        @current_level.eql? yield_level or (not wanted_key.nil? and wanted_key == previous_key)
       end
 
       def yield_value?(yield_values, yield_level, wanted_key)
@@ -134,6 +134,10 @@ module Json
 
       def next_level
         @current_level + 1
+      end
+
+      def previous_key
+        @aggregator_keys[@current_level - 1]
       end
     end
   end
