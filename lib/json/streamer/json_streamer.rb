@@ -46,7 +46,7 @@ module Json
         @parser.end_object do
           if yield_object?(yield_nesting_level, wanted_key)
             yield @aggregator[@current_nesting_level].clone
-            @aggregator[@current_nesting_level] = {}
+            reset_current_level(Hash.new)
           else
             merge_up
           end
@@ -57,7 +57,7 @@ module Json
         @parser.end_array do
           if yield_object?(yield_nesting_level, wanted_key)
             yield @aggregator[@current_nesting_level].clone
-            @aggregator[@current_nesting_level] = []
+            reset_current_level(Array.new)
           else
             merge_up
           end
@@ -81,15 +81,21 @@ module Json
       end
 
       def start_object
-        set_aggregator_key
-        @current_nesting_level += 1
-        @aggregator[@current_nesting_level] = {}
+        new_level(Hash.new)
       end
 
       def start_array
+        new_level(Array.new)
+      end
+
+      def new_level(type)
         set_aggregator_key
         @current_nesting_level += 1
-        @aggregator[@current_nesting_level] = []
+        reset_current_level(type)
+      end
+
+      def reset_current_level(type)
+        @aggregator[@current_nesting_level] = type
       end
 
       def set_aggregator_key
