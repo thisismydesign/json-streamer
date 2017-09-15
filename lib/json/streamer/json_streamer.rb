@@ -81,17 +81,20 @@ module Json
       end
 
       def start_object
-        reset_current_key if in_an_array?
-        @aggregator_keys[@current_nesting_level] = @current_key
+        set_aggregator_key
         @current_nesting_level += 1
         @aggregator[@current_nesting_level] = {}
       end
 
       def start_array
-        reset_current_key if in_an_array?
-        @aggregator_keys[@current_nesting_level] = @current_key
+        set_aggregator_key
         @current_nesting_level += 1
         @aggregator[@current_nesting_level] = []
+      end
+
+      def set_aggregator_key
+        reset_current_key if in_an_array?
+        @aggregator_keys[@current_nesting_level] = @current_key
       end
 
       def reset_current_key
