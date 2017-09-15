@@ -116,7 +116,6 @@ module Json
         end
 
         @aggregator.delete(@current_nesting_level)
-        @aggregator
       end
     end
   end
