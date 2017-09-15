@@ -29,6 +29,17 @@ RSpec.describe Json::Streamer::JsonStreamer do
     end if DEBUG
   end
 
+  describe '#<<' do
+    it 'forwards data to parser' do
+      data = {}
+      streamer = Json::Streamer.parser
+
+      expect(streamer.parser).to receive(:<<).with(data)
+
+      streamer << data
+    end
+  end
+
   describe '#get' do
 
     context '0th level of empty JSON object' do

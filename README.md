@@ -47,18 +47,25 @@ Or install it yourself as:
 
 ```ruby
 require 'json/streamer'
+```
 
+### v1.1.3 API
+
+Check the unit tests for more examples ([spec/streamer_spec.rb](spec/streamer_spec.rb)).
+
+#### Passing IO upfront
+
+```ruby
 file_stream = File.open('data.json', 'r')
+chunk_size = 500 # defaults to 1000
 
-# Get a JsonStreamer object that will parse file_stream by chunks of 500
-# Default chunk size in 1000
-streamer = Json::Streamer::JsonStreamer.new(file_stream, 500)
+streamer = Json::Streamer.parser(file_io: file_stream, chunk_size: chunk_size)
 ```
 
 #### Get objects based on nesting level
 
 ```ruby
-# Level zero will give you the full JSON, first level will give you data within full JSON object, etc.
+# Level zero yields the full JSON, first level yields data within the JSON 1-by-1, etc.
 streamer.get(nesting_level:1) do |object|
     p object
 end
@@ -109,7 +116,7 @@ Output:
 {"desired_key" : "value3"}
 ```
 
-#### Skip values if you'd only like to get objects and arrays
+#### Skip values
 
 ```ruby
 streamer.get(nesting_level:1, yield_values:false) do |object|
@@ -130,12 +137,12 @@ Output:
 {}
 ```
 
-#### EventMachine-style input (since 1.1.0)
+#### Passing IO later (EventMachine-style)
 
 ```ruby
 # Get a JsonStreamer object that provides access to the parser
 # but does not start processing immediately
-streamer = Json::Streamer::JsonStreamer.new
+streamer = Json::Streamer.parser
 
 streamer.get(nesting_level:1) do |object|
     p object
@@ -146,11 +153,23 @@ Then later in your EventMachine handler:
 
 ```ruby
 def receive_data(data)
-    streamer.parser << data
+    streamer << data
 end
 ```
 
-Check the unit tests for more examples ([spec/streamer_spec.rb](spec/streamer_spec.rb)).
+### Legacy API (pre-v1.1.3)
+
+This functionality is deprecated but kept for compatibility reasons.
+
+```ruby
+# Same as Json::Streamer.parser
+streamer = Json::Streamer::JsonStreamer.new
+```
+
+```ruby
+# Same as streamer << data
+streamer.parser << data
+```
 
 ## Feedback
 

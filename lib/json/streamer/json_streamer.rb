@@ -22,8 +22,12 @@ module Json
         @parser.key {|k| key(k)}
       end
 
+      def <<(data)
+        @parser << data
+      end
+
       # Callbacks containing `yield` have to be defined in the method called via block otherwise yield won't work
-      def get(nesting_level:-1, key:nil, yield_values:true)
+      def get(nesting_level: -1, key: nil, yield_values: true)
         @yield_level = nesting_level
         @yield_key = key
         @yield_values = yield_values
