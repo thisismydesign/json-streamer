@@ -26,9 +26,10 @@ module Json
       def get(nesting_level:-1, key:nil, yield_values:true)
         @yield_level = nesting_level
         @yield_key = key
+        @yield_values = yield_values
 
         @parser.value do |v|
-          value(v, yield_values, nesting_level) do |desired_object|
+          value(v) do |desired_object|
             yield desired_object
           end
         end
@@ -60,9 +61,9 @@ module Json
         @current_key = k
       end
 
-      def value(value, yield_values, yield_level)
+      def value(value)
         reset_current_key if array_level?(@current_level)
-        yield value if yield_value?(yield_values, yield_level)
+        yield value if yield_value?
         add_value(value)
       end
 
@@ -75,7 +76,7 @@ module Json
       end
 
       def end_level(type)
-        if yield_object?(@yield_level)
+        if yield_object?
           yield @aggregator[@current_level].clone
           reset_current_level(type)
         else
@@ -85,12 +86,12 @@ module Json
         @current_level -= 1
       end
 
-      def yield_object?(yield_level)
-        @current_level.eql? yield_level or (not @yield_key.nil? and @yield_key == previous_key)
+      def yield_object?
+        @current_level.eql?(@yield_level) or (not @yield_key.nil? and @yield_key == previous_key)
       end
 
-      def yield_value?(yield_values, yield_level)
-        yield_values and ((next_level).eql?(yield_level) or (not @yield_key.nil? and @yield_key == @current_key))
+      def yield_value?
+        @yield_values and ((next_level).eql?(@yield_level) or (not @yield_key.nil? and @yield_key == @current_key))
       end
 
       def new_level(type)
