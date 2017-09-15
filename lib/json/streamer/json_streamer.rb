@@ -111,7 +111,6 @@ module Json
 
       def merge_up
         return if @current_nesting_level == 0
-        previous_nesting_level = @current_nesting_level - 1
         if array_level?(previous_nesting_level)
           @aggregator[previous_nesting_level] << @aggregator[@current_nesting_level]
         else
@@ -119,6 +118,10 @@ module Json
         end
 
         @aggregator.delete(@current_nesting_level)
+      end
+
+      def previous_nesting_level
+        @current_nesting_level - 1
       end
     end
   end
