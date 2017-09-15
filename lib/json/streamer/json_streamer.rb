@@ -16,7 +16,7 @@ module Json
         @current_nesting_level = -1
         @current_key = nil
         @aggregator = {}
-        @temp_aggregator_keys = {}
+        @aggregator_keys = {}
 
         @parser.start_object {start_object}
         @parser.start_array {start_array}
@@ -73,7 +73,7 @@ module Json
       end
 
       def yield_object?(yield_nesting_level, wanted_key)
-        @current_nesting_level.eql? yield_nesting_level or (not wanted_key.nil? and wanted_key == @temp_aggregator_keys[@current_nesting_level-1])
+        @current_nesting_level.eql? yield_nesting_level or (not wanted_key.nil? and wanted_key == @aggregator_keys[@current_nesting_level-1])
       end
 
       def yield_value?(yield_nesting_level, wanted_key = nil)
@@ -82,14 +82,14 @@ module Json
 
       def start_object
         reset_current_key if in_an_array?
-        @temp_aggregator_keys[@current_nesting_level] = @current_key
+        @aggregator_keys[@current_nesting_level] = @current_key
         @current_nesting_level += 1
         @aggregator[@current_nesting_level] = {}
       end
 
       def start_array
         reset_current_key if in_an_array?
-        @temp_aggregator_keys[@current_nesting_level] = @current_key
+        @aggregator_keys[@current_nesting_level] = @current_key
         @current_nesting_level += 1
         @aggregator[@current_nesting_level] = []
       end
@@ -112,7 +112,7 @@ module Json
         if @aggregator[previous_nesting_level].kind_of? Array
           @aggregator[previous_nesting_level] << @aggregator[@current_nesting_level]
         else
-          @aggregator[previous_nesting_level][@temp_aggregator_keys[previous_nesting_level]] = @aggregator[@current_nesting_level]
+          @aggregator[previous_nesting_level][@aggregator_keys[previous_nesting_level]] = @aggregator[@current_nesting_level]
         end
 
         @aggregator.delete(@current_nesting_level)
