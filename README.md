@@ -160,16 +160,19 @@ I can only tailor this project to fit use-cases I know about - which are usually
 
 Please let me know if you make use of this project so that I can prioritize further efforts.
 
-## Development
+## Conventions
 
-After checking out the repo, run `bin/setup` to install dependencies. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
-
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+This gem is developed using the following conventions:
+- [Bundler's guide for developing a gem](http://bundler.io/v1.14/guides/creating_gem.html)
+- [Better Specs](http://www.betterspecs.org/)
+- [Semantic versioning](http://semver.org/)
+- [RubyGems' guide on gem naming](http://guides.rubygems.org/name-your-gem/)
+- [RFC memo about key words used to Indicate Requirement Levels](https://tools.ietf.org/html/rfc2119)
+- [Bundler improvements](https://github.com/thisismydesign/bundler-improvements)
 
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/thisismydesign/json-streamer. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
-
 
 ## License
 
