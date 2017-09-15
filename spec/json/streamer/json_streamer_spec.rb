@@ -1,6 +1,4 @@
 require 'spec_helper'
-require 'json/stream'
-require 'get_process_mem'
 
 DEBUG = false
 
