@@ -14,7 +14,6 @@ module Json
         @chunk_size = chunk_size
 
         @current_level = -1
-        @current_key = nil
         @aggregator = {}
         @aggregator_keys = {}
 
