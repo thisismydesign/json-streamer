@@ -51,7 +51,7 @@ require 'json/streamer'
 
 ### v1.1.3 API
 
-Check the unit tests for more examples ([spec/streamer_spec.rb](spec/streamer_spec.rb)).
+Check the unit tests for more examples ([spec/streamer_spec.rb](spec/json/streamer/streamer_spec.rb)).
 
 #### Passing IO upfront
 
