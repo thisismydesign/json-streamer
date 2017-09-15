@@ -25,26 +25,26 @@ module Json
 
       # Callbacks containing `yield` have to be defined in the method called via block otherwise yield won't work
       def get(nesting_level:-1, key:nil, yield_values:true)
-        yield_nesting_level = nesting_level
+        yield_level = nesting_level
         wanted_key = key
 
         @parser.value do |v|
           if array_level?(@current_level)
-            if yield_value?(yield_values, yield_nesting_level)
+            if yield_value?(yield_values, yield_level)
               yield v
             else
               @aggregator[@current_level] << v
             end
           else
             @aggregator[@current_level][@current_key] = v
-            if yield_value?(yield_values, yield_nesting_level, wanted_key)
+            if yield_value?(yield_values, yield_level, wanted_key)
               yield v
             end
           end
         end
 
         @parser.end_object do
-          if yield_object?(yield_nesting_level, wanted_key)
+          if yield_object?(yield_level, wanted_key)
             yield @aggregator[@current_level].clone
             reset_current_level(Hash.new)
           else
@@ -55,7 +55,7 @@ module Json
         end
 
         @parser.end_array do
-          if yield_object?(yield_nesting_level, wanted_key)
+          if yield_object?(yield_level, wanted_key)
             yield @aggregator[@current_level].clone
             reset_current_level(Array.new)
           else
