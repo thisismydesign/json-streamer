@@ -29,17 +29,8 @@ module Json
         @wanted_key = key
 
         @parser.value do |v|
-          if array_level?(@current_level)
-            if yield_value?(yield_values, nesting_level)
-              yield v
-            else
-              @aggregator[@current_level] << v
-            end
-          else
-            @aggregator[@current_level][@current_key] = v
-            if yield_value?(yield_values, nesting_level, key)
-              yield v
-            end
+          value(v, yield_values, nesting_level, key) do |desired_object|
+            yield desired_object
           end
         end
 
@@ -68,6 +59,19 @@ module Json
 
       def key(k)
         @current_key = k
+      end
+
+      def value(value, yield_values, yield_level, key)
+        if array_level?(@current_level)
+          if yield_value?(yield_values, yield_level)
+            yield value
+          else
+            @aggregator[@current_level] << value
+          end
+        else
+          @aggregator[@current_level][@current_key] = value
+          yield value if yield_value?(yield_values, yield_level, key)
+        end
       end
 
       def end_level(type)
