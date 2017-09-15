@@ -29,7 +29,7 @@ module Json
         wanted_key = key
 
         @parser.value do |v|
-          if in_an_array?
+          if array_level?(@current_nesting_level)
             if yield_values and yield_value?(yield_nesting_level)
               yield v
             else
@@ -93,7 +93,7 @@ module Json
       end
 
       def set_aggregator_key
-        reset_current_key if in_an_array?
+        reset_current_key if array_level?(@current_nesting_level)
         @aggregator_keys[@current_nesting_level] = @current_key
       end
 
@@ -101,8 +101,8 @@ module Json
         @current_key = nil
       end
 
-      def in_an_array?
-        @aggregator[@current_nesting_level].is_a?(Array)
+      def array_level?(nesting_level)
+        @aggregator[nesting_level].is_a?(Array)
       end
 
       def key(k)
@@ -112,7 +112,7 @@ module Json
       def merge_up
         return if @current_nesting_level == 0
         previous_nesting_level = @current_nesting_level - 1
-        if @aggregator[previous_nesting_level].kind_of? Array
+        if array_level?(previous_nesting_level)
           @aggregator[previous_nesting_level] << @aggregator[@current_nesting_level]
         else
           @aggregator[previous_nesting_level][@aggregator_keys[previous_nesting_level]] = @aggregator[@current_nesting_level]
