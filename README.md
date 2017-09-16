@@ -80,7 +80,7 @@ Input:
 ```
 
 Output:
-```json
+```ruby
 "first_level_value"
 {}
 ```
@@ -109,11 +109,11 @@ Input:
 ```
 
 Output:
-```json
+```ruby
 "value1"
 "value2"
 "value3"
-{"desired_key" : "value3"}
+{"desired_key" => "value3"}
 ```
 
 #### Skip values
@@ -155,7 +155,7 @@ Input:
 ```
 
 Output:
-```json
+```ruby
 {:obj1=>{:key=>"value"}}
 ```
 
