@@ -49,7 +49,7 @@ Or install it yourself as:
 require 'json/streamer'
 ```
 
-### v1.1.3 API
+### v1.2 API
 
 Check the unit tests for more examples ([spec/streamer_spec.rb](spec/json/streamer/json_streamer_spec.rb)).
 
@@ -157,7 +157,7 @@ def receive_data(data)
 end
 ```
 
-### Legacy API (pre-v1.1.3)
+### Legacy API (pre-v1.2)
 
 This functionality is deprecated but kept for compatibility reasons.
 
