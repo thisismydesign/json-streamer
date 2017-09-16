@@ -49,7 +49,7 @@ Or install it yourself as:
 require 'json/streamer'
 ```
 
-### v1.2 API
+### v1.2 (and above) API
 
 Check the unit tests for more examples ([spec/streamer_spec.rb](spec/json/streamer/json_streamer_spec.rb)).
 
@@ -138,6 +138,8 @@ Output:
 ```
 
 #### Symbolize keys
+
+Since [v1.3.0](https://github.com/thisismydesign/json-streamer/releases/tag/v1.3.0)
 
 ```ruby
 streamer.get(nesting_level:0, symbolize_keys: true) do |object|
