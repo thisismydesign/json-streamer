@@ -1,13 +1,5 @@
 require 'spec_helper'
 
-DEBUG = false
-
-def highlight(msg)
-  puts("\n#{'#' * 10} #{msg} #{'#' * 10}\n\n")
-  yield
-  puts("\n#{'#' * 8} #{msg} END #{'#' * 8}\n\n")
-end
-
 RSpec.describe Json::Streamer::JsonStreamer do
 
   before do
@@ -451,50 +443,6 @@ RSpec.describe Json::Streamer::JsonStreamer do
           expect(yielded_objects.length).to eq(1)
           expect(yielded_objects[0]).to eq([@example_value, @example_value, @example_value])
         end
-      end
-    end
-
-    context 'Big JSON array parsed with JSON::Stream', :speed => 'slow', :type => 'memory' do
-      it 'should increase memory consumption' do
-
-        json_array_size = 2**16
-        hash = Array.new(json_array_size) {@example_hash}
-        json_file_mock = StringIO.new(JSON.generate(hash))
-
-        memory_consumption_before_parsing = GetProcessMem.new.mb
-        obj = JSON::Stream::Parser.parse(json_file_mock)
-        memory_consumption_after_parsing = GetProcessMem.new.mb
-
-        p "Number of elements: #{json_array_size}"
-        p "Memory consumption before and after parsing: #{memory_consumption_before_parsing.round} MB -  #{memory_consumption_after_parsing.round} MB"
-        expect(memory_consumption_after_parsing).to be > 1.5 * memory_consumption_before_parsing
-        p "With JSON::Stream memory consumption increased with at least 150% during processing."
-      end
-    end
-
-    context 'Big JSON array parsed with JSON::Streamer', :speed => 'slow', :type => 'memory' do
-      it 'should NOT increase memory consumption'  do
-
-        json_array_size = 2**18
-        hash = Array.new(json_array_size) {@example_hash}
-        json_file_mock = StringIO.new(JSON.generate(hash))
-
-        memory_consumption_before_parsing = GetProcessMem.new.mb
-
-        streamer = Json::Streamer::JsonStreamer.new(json_file_mock, @chunk_size)
-        object_count = 0
-        streamer.get(nesting_level:1) do |object|
-          expect(object).to eq(@example_hash)
-          object_count += 1
-        end
-        expect(object_count).to eq(json_array_size)
-
-        memory_consumption_after_parsing = GetProcessMem.new.mb
-
-        p "Number of elements: #{json_array_size}"
-        p "Memory consumption before and after parsing: #{memory_consumption_before_parsing.round} MB -  #{memory_consumption_after_parsing.round} MB"
-        expect(memory_consumption_after_parsing).to be < 1.1 * memory_consumption_before_parsing
-        p "With JSON::Streamer memory consumption did not increase significantly during processing."
       end
     end
   end
