@@ -446,4 +446,21 @@ RSpec.describe Json::Streamer::JsonStreamer do
       end
     end
   end
+
+  context 'symbolize_keys' do
+    let(:hash) { hash = {'object' => @example_hash} }
+
+    it 'symbolizes keys' do
+      json_file_mock = StringIO.new(JSON.generate(hash))
+      streamer = Json::Streamer::JsonStreamer.new(json_file_mock, @chunk_size)
+
+      yielded_objects = []
+      streamer.get(nesting_level:0, symbolize_keys: true) do |object|
+        yielded_objects.push(object)
+      end
+
+      expect(yielded_objects.length).to eq(hash.length)
+      expect(yielded_objects[0]).to eq({object: {key: 'value'}})
+    end
+  end
 end

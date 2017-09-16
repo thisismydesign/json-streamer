@@ -137,6 +137,26 @@ Output:
 {}
 ```
 
+#### Symbolize keys
+
+```ruby
+streamer.get(nesting_level:0, symbolize_keys: true) do |object|
+    p object
+end
+```
+
+Input:
+```json
+{
+    "obj1" : {"key" : "value"}
+}
+```
+
+Output:
+```json
+{:obj1=>{:key=>"value"}}
+```
+
 #### Passing IO later (EventMachine-style)
 
 ```ruby

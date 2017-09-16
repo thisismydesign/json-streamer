@@ -27,10 +27,11 @@ module Json
       end
 
       # Callbacks containing `yield` have to be defined in the method called via block otherwise yield won't work
-      def get(nesting_level: -1, key: nil, yield_values: true)
+      def get(nesting_level: -1, key: nil, yield_values: true, symbolize_keys: false)
         @yield_level = nesting_level
         @yield_key = key
         @yield_values = yield_values
+        @symbolize_keys = symbolize_keys
 
         @parser.value do |v|
           value(v) { |desired_object| yield desired_object }
@@ -56,7 +57,7 @@ module Json
       end
 
       def key(k)
-        @current_key = k
+        @current_key = @symbolize_keys ? k.to_sym : k
       end
 
       def value(value)
