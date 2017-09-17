@@ -14,7 +14,7 @@ module Json
         @chunk_size = chunk_size
 
         @current_level = -1
-        @aggregator = {}
+        @aggregator = []
         @aggregator_keys = {}
 
         @parser.start_object {start_object}
@@ -71,15 +71,15 @@ module Json
 
       def add_value(value)
         if array_level?(@current_level)
-          @aggregator[@current_level] << value
+          @aggregator.last << value
         else
-          @aggregator[@current_level][current_key] = value
+          @aggregator.last[current_key] = value
         end
       end
 
       def end_level(type)
         if yield_object?
-          yield @aggregator[@current_level].clone
+          yield @aggregator.last.clone
           reset_current_level(type)
         else
           merge_up
@@ -122,12 +122,12 @@ module Json
         return if @current_level.zero?
 
         if array_level?(previous_level)
-          @aggregator[previous_level] << @aggregator[@current_level]
+          @aggregator[previous_level] << @aggregator.last
         else
-          @aggregator[previous_level][previous_key] = @aggregator[@current_level]
+          @aggregator[previous_level][previous_key] = @aggregator.last
         end
 
-        @aggregator.delete(@current_level)
+        @aggregator.pop
       end
 
       def previous_level
