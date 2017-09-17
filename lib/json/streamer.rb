@@ -1,5 +1,6 @@
 require_relative "streamer/json_streamer"
 require_relative "streamer/conditions"
+require_relative "streamer/callbacks"
 
 module Json
   module Streamer
