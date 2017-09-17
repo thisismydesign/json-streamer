@@ -78,10 +78,10 @@ module Json
       end
 
       def add_value(value)
-        if array_level?(level)
-          @aggregator[level][:data] << value
+        if array_level?(@current_level)
+          @aggregator[@current_level][:data] << value
         else
-          @aggregator[level][:data][@aggregator[level][:key]] = value
+          @aggregator[@current_level][:data][current_key] = value
         end
       end
 
