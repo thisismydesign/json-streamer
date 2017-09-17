@@ -80,11 +80,11 @@ module Json
       def end_level(type)
         if yield_object?
           yield @aggregator.last.clone
-          reset_current_level(type)
         else
           merge_up
         end
 
+        @aggregator.pop
         remove_aggregator_key
         @current_level -= 1
       end
@@ -99,11 +99,7 @@ module Json
 
       def new_level(type)
         @current_level += 1
-        reset_current_level(type)
-      end
-
-      def reset_current_level(type)
-        @aggregator[@current_level] = type
+        @aggregator.push(type)
       end
 
       def set_aggregator_key(key)
@@ -126,8 +122,6 @@ module Json
         else
           @aggregator[previous_level][previous_key] = @aggregator.last
         end
-
-        @aggregator.pop
       end
 
       def previous_level

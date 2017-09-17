@@ -163,7 +163,7 @@ RSpec.describe Json::Streamer::JsonStreamer do
 
         streamer.get(nesting_level:0) {}
 
-        expect(streamer.aggregator[0].size).to eq(0)
+        expect(streamer.aggregator.size).to eq(0)
       end
     end
 
