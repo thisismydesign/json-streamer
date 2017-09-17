@@ -18,7 +18,6 @@ module Json
 
         @parser.start_object {start_object}
         @parser.start_array {start_array}
-        @parser.key {|k| key(k)}
       end
 
       def <<(data)
@@ -27,10 +26,11 @@ module Json
 
       # Callbacks containing `yield` have to be defined in the method called via block otherwise yield won't work
       def get(nesting_level: -1, key: nil, yield_values: true, symbolize_keys: false)
-        @yield_level = nesting_level
-        @yield_key = key
-        @yield_values = yield_values
-        @symbolize_keys = symbolize_keys
+        @conditions = Conditions.new(nesting_level, key, yield_values)
+
+        @parser.key do |k|
+          key(k, symbolize_keys)
+        end
 
         @parser.value do |v|
           value(v) { |desired_object| yield desired_object }
@@ -55,12 +55,12 @@ module Json
         new_level(Array.new)
       end
 
-      def key(k)
-        @aggregator[@current_level][:key] = @symbolize_keys ? k.to_sym : k
+      def key(k, symbolize_keys)
+        @aggregator[@current_level][:key] = symbolize_keys ? k.to_sym : k
       end
 
       def value(value)
-        yield value if yield_value?
+        yield value if @conditions.yield_value?(next_level, current_key)
         add_value(value)
       end
 
@@ -70,7 +70,7 @@ module Json
         @aggregator.pop
         @current_level -= 1
 
-        if yield?
+        if @conditions.yield?(next_level, current_key)
           yield data
         else
           add_value(data) unless @current_level < 0
@@ -83,14 +83,6 @@ module Json
         else
           @aggregator[@current_level][:data][current_key] = value
         end
-      end
-
-      def yield_value?
-        @yield_values and yield?
-      end
-
-      def yield?
-        next_level.eql?(@yield_level) or (not @yield_key.nil? and @yield_key == current_key)
       end
 
       def current_key
