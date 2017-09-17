@@ -17,7 +17,7 @@ RSpec.describe Json::Streamer::Conditions do
     end
 
     context 'key' do
-      context 'yield_key procided' do
+      context 'yield_key provided' do
         let(:yield_key) { 'expected' }
 
         it 'returns whether provided key equals yield_key' do
