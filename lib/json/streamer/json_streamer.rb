@@ -59,27 +59,25 @@ module Json
         @aggregator[@current_level][:key] = @symbolize_keys ? k.to_sym : k
       end
 
-      def current_key
-        @aggregator[@current_level][:key]
-      end
-
       def value(value)
         yield value if yield_value?
         add_value(value)
       end
 
       def end_level
-        if yield_object?
-          yield @aggregator.last[:data].clone
-        else
-          add_value(@aggregator.last[:data], previous_level) unless @current_level.zero?
-        end
+        data = @aggregator.last[:data].clone
 
         @aggregator.pop
         @current_level -= 1
+
+        if yield_object?
+          yield data
+        else
+          add_value(data) unless @current_level < 0
+        end
       end
 
-      def add_value(value, level = @current_level)
+      def add_value(value)
         if array_level?(level)
           @aggregator[level][:data] << value
         else
@@ -88,11 +86,15 @@ module Json
       end
 
       def yield_object?
-        @current_level.eql?(@yield_level) or (not @yield_key.nil? and @yield_key == previous_key)
+        next_level.eql?(@yield_level) or (not @yield_key.nil? and @yield_key == current_key)
       end
 
       def yield_value?
         @yield_values and ((next_level).eql?(@yield_level) or (not @yield_key.nil? and @yield_key == current_key))
+      end
+
+      def current_key
+        @aggregator[@current_level][:key] unless @current_level < 0
       end
 
       def new_level(type)
@@ -104,16 +106,8 @@ module Json
         @aggregator[nesting_level][:data].is_a?(Array)
       end
 
-      def previous_level
-        @current_level - 1
-      end
-
       def next_level
         @current_level + 1
-      end
-
-      def previous_key
-        @aggregator[previous_level][:key] unless @current_level.zero?
       end
     end
   end
