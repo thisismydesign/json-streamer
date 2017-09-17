@@ -23,8 +23,11 @@ module Json
       end
 
       def value(value)
-        yield value if @conditions.yield_value?(next_level, current_key)
-        add_value(value)
+        if @conditions.yield_value?(next_level, current_key)
+          yield value
+        else
+          add_value(value)
+        end
       end
 
       def end_level

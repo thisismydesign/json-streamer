@@ -259,20 +259,32 @@ RSpec.describe Json::Streamer::JsonStreamer do
     context 'By key from multi level JSON' do
       it 'should yield values and objects as well within JSON object from all levels the key occurs' do
 
-        hash = {'obj1' => @example_hash, @example_key => @example_value, 'obj2' => {@example_key => @example_hash}}
+        hash = {'obj1' => @example_hash, @example_key => @example_value, 'obj2' => @example_hash}
         json_file_mock = StringIO.new(JSON.generate(hash))
         streamer = Json::Streamer::JsonStreamer.new(json_file_mock, @chunk_size)
 
         objects = []
-        streamer.get(key:@example_key) do |object|
+        streamer.get(key: @example_key) do |object|
           objects.push(object)
         end
 
-        expect(objects.length).to eq(4)
-        objects[0..2].each do |element|
-          expect(element).to eq(@example_value)
+        expect(objects).to eq([@example_value, @example_value, @example_value])
+      end
+    end
+
+    context 'overlapping conditions' do
+      it 'consumes object on first occurrence' do
+        hash = {@example_key => {@example_key => @example_hash}}
+
+        json_file_mock = StringIO.new(JSON.generate(hash))
+        streamer = Json::Streamer::JsonStreamer.new(json_file_mock, @chunk_size)
+
+        objects = []
+        streamer.get(key: @example_key) do |object|
+          objects.push(object)
         end
-        expect(objects[3]).to eq(@example_hash)
+
+        expect(objects).to eq([@example_value, {}, {}])
       end
     end
 
@@ -407,25 +419,6 @@ RSpec.describe Json::Streamer::JsonStreamer do
             expect(yielded_objects.length).to eq(1)
             expect(yielded_objects[0]).to eq({'nested_items' => [@example_hash, @example_value, @example_hash]})
           end
-        end
-      end
-
-      context 'Issue #8 values consumed' do
-        let(:hash) { {items:{nested_items:[@example_value, @example_value, @example_value]}} }
-
-        it 'does not consume values' do
-          json_file_mock = StringIO.new(JSON.generate(hash))
-          streamer = Json::Streamer::JsonStreamer.new(json_file_mock, @chunk_size)
-
-          streamer.get(nesting_level:3, key: 'items') do |object|
-            yielded_objects.push(object)
-          end
-
-          expect(yielded_objects.length).to eq(4)
-          yielded_objects[0..2].each do |element|
-            expect(element).to eq(@example_value)
-          end
-          expect(yielded_objects[3]).to eq({'nested_items' => [@example_value, @example_value, @example_value]})
         end
       end
 
