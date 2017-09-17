@@ -57,11 +57,14 @@ module Json
       end
 
       def key(k)
-        @current_key = @symbolize_keys ? k.to_sym : k
+        set_aggregator_key(@symbolize_keys ? k.to_sym : k)
+      end
+
+      def current_key
+        @aggregator_keys[@current_level]
       end
 
       def value(value)
-        reset_current_key if array_level?(@current_level)
         yield value if yield_value?
         add_value(value)
       end
@@ -70,7 +73,7 @@ module Json
         if array_level?(@current_level)
           @aggregator[@current_level] << value
         else
-          @aggregator[@current_level][@current_key] = value
+          @aggregator[@current_level][current_key] = value
         end
       end
 
@@ -82,6 +85,7 @@ module Json
           merge_up
         end
 
+        remove_aggregator_key
         @current_level -= 1
       end
 
@@ -90,12 +94,10 @@ module Json
       end
 
       def yield_value?
-        @yield_values and ((next_level).eql?(@yield_level) or (not @yield_key.nil? and @yield_key == @current_key))
+        @yield_values and ((next_level).eql?(@yield_level) or (not @yield_key.nil? and @yield_key == current_key))
       end
 
       def new_level(type)
-        reset_current_key if array_level?(@current_level)
-        set_aggregator_key
         @current_level += 1
         reset_current_level(type)
       end
@@ -104,12 +106,12 @@ module Json
         @aggregator[@current_level] = type
       end
 
-      def set_aggregator_key
-        @aggregator_keys[@current_level] = @current_key
+      def set_aggregator_key(key)
+        @aggregator_keys[@current_level] = key
       end
 
-      def reset_current_key
-        @current_key = nil
+      def remove_aggregator_key
+        @aggregator_keys.tap { |h| h.delete(@current_level.to_s) }
       end
 
       def array_level?(nesting_level)
