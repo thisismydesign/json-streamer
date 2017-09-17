@@ -70,7 +70,7 @@ module Json
         @aggregator.pop
         @current_level -= 1
 
-        if yield_object?
+        if yield?
           yield data
         else
           add_value(data) unless @current_level < 0
@@ -85,12 +85,12 @@ module Json
         end
       end
 
-      def yield_object?
-        next_level.eql?(@yield_level) or (not @yield_key.nil? and @yield_key == current_key)
+      def yield_value?
+        @yield_values and yield?
       end
 
-      def yield_value?
-        @yield_values and ((next_level).eql?(@yield_level) or (not @yield_key.nil? and @yield_key == current_key))
+      def yield?
+        next_level.eql?(@yield_level) or (not @yield_key.nil? and @yield_key == current_key)
       end
 
       def current_key
