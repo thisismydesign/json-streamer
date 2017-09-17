@@ -71,15 +71,15 @@ module Json
 
       def add_value(value)
         if array_level?(@current_level)
-          @aggregator.last << value
+          @aggregator.last[:data] << value
         else
-          @aggregator.last[current_key] = value
+          @aggregator.last[:data][current_key] = value
         end
       end
 
       def end_level
         if yield_object?
-          yield @aggregator.last.clone
+          yield @aggregator.last[:data].clone
         else
           merge_up
         end
@@ -99,7 +99,7 @@ module Json
 
       def new_level(type)
         @current_level += 1
-        @aggregator.push(type)
+        @aggregator.push(data: type)
       end
 
       def set_aggregator_key(key)
@@ -111,16 +111,16 @@ module Json
       end
 
       def array_level?(nesting_level)
-        @aggregator[nesting_level].is_a?(Array)
+        @aggregator[nesting_level][:data].is_a?(Array)
       end
 
       def merge_up
         return if @current_level.zero?
 
         if array_level?(previous_level)
-          @aggregator[previous_level] << @aggregator.last
+          @aggregator[previous_level][:data] << @aggregator.last[:data]
         else
-          @aggregator[previous_level][previous_key] = @aggregator.last
+          @aggregator[previous_level][:data][previous_key] = @aggregator.last[:data]
         end
       end
 
