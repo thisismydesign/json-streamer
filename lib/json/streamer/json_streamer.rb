@@ -38,11 +38,11 @@ module Json
         end
 
         @parser.end_object do
-          end_level(Hash.new) { |desired_object| yield desired_object }
+          end_level { |desired_object| yield desired_object }
         end
 
         @parser.end_array do
-          end_level(Array.new) { |desired_object| yield desired_object }
+          end_level { |desired_object| yield desired_object }
         end
 
         @file_io.each(@chunk_size) { |chunk| @parser << chunk } if @file_io
@@ -77,7 +77,7 @@ module Json
         end
       end
 
-      def end_level(type)
+      def end_level
         if yield_object?
           yield @aggregator.last.clone
         else
