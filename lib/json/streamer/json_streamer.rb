@@ -15,7 +15,6 @@ module Json
 
         @current_level = -1
         @aggregator = []
-        @aggregator_keys = {}
 
         @parser.start_object {start_object}
         @parser.start_array {start_array}
@@ -57,11 +56,11 @@ module Json
       end
 
       def key(k)
-        set_aggregator_key(@symbolize_keys ? k.to_sym : k)
+        @aggregator[@current_level][:key] = @symbolize_keys ? k.to_sym : k
       end
 
       def current_key
-        @aggregator_keys[@current_level]
+        @aggregator[@current_level][:key]
       end
 
       def value(value)
@@ -85,7 +84,6 @@ module Json
         end
 
         @aggregator.pop
-        remove_aggregator_key
         @current_level -= 1
       end
 
@@ -100,14 +98,6 @@ module Json
       def new_level(type)
         @current_level += 1
         @aggregator.push(data: type)
-      end
-
-      def set_aggregator_key(key)
-        @aggregator_keys[@current_level] = key
-      end
-
-      def remove_aggregator_key
-        @aggregator_keys.tap { |h| h.delete(@current_level.to_s) }
       end
 
       def array_level?(nesting_level)
@@ -133,7 +123,7 @@ module Json
       end
 
       def previous_key
-        @aggregator_keys[previous_level]
+        @aggregator[previous_level][:key] unless @current_level.zero?
       end
     end
   end
