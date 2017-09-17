@@ -33,11 +33,11 @@ module Json
         end
 
         @parser.end_object do
-          @callbacks.end_level { |desired_object| yield desired_object }
+          @callbacks.end_object { |desired_object| yield desired_object }
         end
 
         @parser.end_array do
-          @callbacks.end_level { |desired_object| yield desired_object }
+          @callbacks.end_array { |desired_object| yield desired_object }
         end
 
         @file_io.each(@chunk_size) { |chunk| @parser << chunk } if @file_io

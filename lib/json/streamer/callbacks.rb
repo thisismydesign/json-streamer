@@ -30,6 +30,16 @@ module Json
         end
       end
 
+      def end_object
+        end_level { |obj| yield obj }
+      end
+
+      def end_array
+        end_level { |obj| yield obj }
+      end
+
+      private
+
       def end_level
         data = @aggregator.last[:data].clone
 
@@ -42,8 +52,6 @@ module Json
           add_value(data) unless @current_level < 0
         end
       end
-
-      private
 
       def add_value(value)
         if array_level?(@current_level)
