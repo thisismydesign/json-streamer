@@ -27,6 +27,9 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "coveralls"
   spec.add_development_dependency "ndhash"
   spec.add_development_dependency "get_process_mem"
+  spec.add_development_dependency "guard"
+  spec.add_development_dependency "guard-bundler"
+  spec.add_development_dependency "guard-rspec"
 
   spec.add_dependency "json-stream"
 end
