@@ -1,5 +1,8 @@
 require "json/stream"
 
+require_relative 'conditions'
+require_relative 'parser'
+
 module Json
   module Streamer
     class JsonStreamer
@@ -7,51 +10,29 @@ module Json
       attr_reader :parser
 
       def initialize(file_io = nil, chunk_size = 1000)
-        @parser = JSON::Stream::Parser.new
+        @event_generator = JSON::Stream::Parser.new
 
         @file_io = file_io
         @chunk_size = chunk_size
-        @aggregator = Aggregator.new
       end
 
       def <<(data)
-        @parser << data
+        parser << data
       end
 
       def get(nesting_level: -1, key: nil, yield_values: true, symbolize_keys: false)
         conditions = Conditions.new(nesting_level, key, yield_values)
-        callbacks = Callbacks.new(@aggregator)
+        @parser = Parser.new(@event_generator, symbolize_keys: symbolize_keys)
 
-        @parser.start_object { callbacks.start_object }
-        @parser.start_array { callbacks.start_array }
-
-        @parser.key do |k|
-          callbacks.key(k, symbolize_keys)
+        parser.get(conditions) do |obj|
+          yield obj
         end
 
-        @parser.value do |v|
-          callbacks.value(v) do |value|
-            yield value if conditions.yield_value?(aggregator: @aggregator, value: value)
-          end
-        end
-
-        @parser.end_object do
-          callbacks.end_object do |object|
-            yield object if conditions.yield_object?(aggregator: @aggregator, object: object)
-          end
-        end
-
-        @parser.end_array do
-          callbacks.end_array do |array|
-            yield array if conditions.yield_array?(aggregator: @aggregator, array: array)
-          end
-        end
-
-        @file_io.each(@chunk_size) { |chunk| @parser << chunk } if @file_io
+        @file_io.each(@chunk_size) { |chunk| parser << chunk } if @file_io
       end
 
       def aggregator
-        @aggregator.get
+        parser.aggregator
       end
     end
   end
