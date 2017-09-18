@@ -13,7 +13,7 @@ RSpec.describe Json::Streamer do
     let!(:json_file_mock) { StringIO.new(JSON.generate(hash)) }
 
     context 'without streaming' do
-      let(:size) { 2**16 }
+      let(:size) { 2**17 }
 
       context 'array of objects parsed with JSON::Stream' do
         let(:content) { example_hash }
