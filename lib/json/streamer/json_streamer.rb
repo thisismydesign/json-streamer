@@ -30,20 +30,20 @@ module Json
         end
 
         @parser.value do |v|
-          callbacks.value(v) do |desired_object|
-            yield desired_object if conditions.yield_value?(@aggregator)
+          callbacks.value(v) do |value|
+            yield value if conditions.yield_value?(aggregator: @aggregator, value: value)
           end
         end
 
         @parser.end_object do
-          callbacks.end_object do |desired_object|
-            yield desired_object if conditions.yield_object?(@aggregator)
+          callbacks.end_object do |object|
+            yield object if conditions.yield_object?(aggregator: @aggregator, object: object)
           end
         end
 
         @parser.end_array do
-          callbacks.end_array do |desired_object|
-            yield desired_object if conditions.yield_array?(@aggregator)
+          callbacks.end_array do |array|
+            yield array if conditions.yield_array?(aggregator: @aggregator, array: array)
           end
         end
 

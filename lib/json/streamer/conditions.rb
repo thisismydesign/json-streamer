@@ -8,15 +8,15 @@ module Json
         @yield_values = yield_values
       end
 
-      def yield_value?(aggregator)
+      def yield_value?(aggregator:, value:)
         @yield_values and yield?(aggregator.level, aggregator.key)
       end
 
-      def yield_object?(aggregator)
+      def yield_object?(aggregator:, object:)
         yield?(aggregator.level, aggregator.key)
       end
 
-      def yield_array?(aggregator)
+      def yield_array?(aggregator:, array:)
         yield?(aggregator.level, aggregator.key)
       end
 
