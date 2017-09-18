@@ -19,7 +19,7 @@ module Json
       end
 
       def key(k, symbolize_keys)
-        @aggregator[@aggregator_level][:key] = symbolize_keys ? k.to_sym : k
+        @aggregator.last[:key] = symbolize_keys ? k.to_sym : k
       end
 
       def value(value)
@@ -55,14 +55,14 @@ module Json
 
       def add_value(value)
         if array_level?(@aggregator_level)
-          @aggregator[@aggregator_level][:data] << value
+          @aggregator.last[:data] << value
         else
-          @aggregator[@aggregator_level][:data][current_key] = value
+          @aggregator.last[:data][current_key] = value
         end
       end
 
       def current_key
-        @aggregator[@aggregator_level][:key] unless @aggregator_level < 0
+        @aggregator.last[:key] unless @aggregator_level < 0
       end
 
       def new_level(type)
