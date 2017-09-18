@@ -6,7 +6,6 @@ module Json
 
       def initialize(conditions)
         @conditions = conditions
-        @aggregator_level = -1
         @aggregator = []
       end
 
@@ -23,7 +22,7 @@ module Json
       end
 
       def value(value)
-        if @conditions.yield_value?(next_level, current_key)
+        if @conditions.yield_value?(current_level, current_key)
           yield value
         else
           add_value(value)
@@ -44,17 +43,16 @@ module Json
         data = @aggregator.last[:data].clone
 
         @aggregator.pop
-        @aggregator_level -= 1
 
-        if @conditions.yield?(next_level, current_key)
+        if @conditions.yield?(current_level, current_key)
           yield data
         else
-          add_value(data) unless @aggregator_level < 0
+          add_value(data) unless @aggregator.empty?
         end
       end
 
       def add_value(value)
-        if array_level?(@aggregator_level)
+        if array_level?
           @aggregator.last[:data] << value
         else
           @aggregator.last[:data][current_key] = value
@@ -62,20 +60,19 @@ module Json
       end
 
       def current_key
-        @aggregator.last[:key] unless @aggregator_level < 0
+        @aggregator.last[:key] unless @aggregator.empty?
       end
 
       def new_level(type)
-        @aggregator_level += 1
         @aggregator.push(data: type)
       end
 
-      def array_level?(nesting_level)
-        @aggregator[nesting_level][:data].is_a?(Array)
+      def array_level?
+        @aggregator.last[:data].is_a?(Array)
       end
 
-      def next_level
-        @aggregator_level + 1
+      def current_level
+        @aggregator.size
       end
     end
   end
