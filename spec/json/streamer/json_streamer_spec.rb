@@ -190,13 +190,13 @@ RSpec.describe Json::Streamer::JsonStreamer do
     end
 
     context 'yield_values' do
-      let(:hash) { { obj: example_hash } }
+      let(:hash) { { obj: example_hash, obj2: { nested_obj: example_hash } } }
 
       context 'enabled' do
         let(:params) { { nesting_level: 2 } }
 
         it 'yields values from given level' do
-          expect(yielded_objects).to eq([example_value])
+          expect(yielded_objects).to eq([example_value, example_hash])
         end
       end
 
@@ -204,7 +204,7 @@ RSpec.describe Json::Streamer::JsonStreamer do
         let(:params) { { nesting_level: 2, yield_values: false } }
 
         it 'does not yield values from given level' do
-          expect(yielded_objects).to be_empty
+          expect(yielded_objects).to eq([example_hash])
         end
       end
     end
