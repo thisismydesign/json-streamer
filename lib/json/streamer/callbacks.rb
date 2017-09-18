@@ -36,6 +36,18 @@ module Json
         end_level { |obj| yield obj }
       end
 
+      def current_level
+        @aggregator.size
+      end
+
+      def current_key
+        key_for_level(current_level - 1)
+      end
+
+      def key_for_level(level)
+        @aggregator[level][:key] unless @aggregator[level].nil?
+      end
+
       private
 
       def end_level
@@ -58,20 +70,12 @@ module Json
         end
       end
 
-      def current_key
-        @aggregator.last[:key] unless @aggregator.empty?
-      end
-
       def new_level(type)
         @aggregator.push(data: type)
       end
 
       def array_level?
         @aggregator.last[:data].is_a?(Array)
-      end
-
-      def current_level
-        @aggregator.size
       end
     end
   end
