@@ -3,9 +3,8 @@ module Json
     class Callbacks
       attr_reader :aggregator
 
-      def initialize(conditions)
-        @conditions = conditions
-        @aggregator = Aggregator.new
+      def initialize(aggregator)
+        @aggregator = aggregator
       end
 
       def start_object
@@ -21,11 +20,8 @@ module Json
       end
 
       def value(value)
-        if @conditions.yield_value?(@aggregator.level, @aggregator.key)
-          yield value
-        else
-          add_value(value)
-        end
+        used = yield value
+        add_value(value) unless used
       end
 
       def end_object
@@ -43,11 +39,8 @@ module Json
 
         @aggregator.pop
 
-        if @conditions.yield?(@aggregator.level, @aggregator.key)
-          yield data
-        else
-          add_value(data) unless @aggregator.empty?
-        end
+        used = yield data
+        add_value(data) unless used or @aggregator.empty?
       end
 
       def add_value(value)
