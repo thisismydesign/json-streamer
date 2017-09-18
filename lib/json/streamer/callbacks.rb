@@ -1,7 +1,6 @@
 module Json
   module Streamer
     class Callbacks
-
       attr_reader :aggregator
 
       def initialize(conditions)
