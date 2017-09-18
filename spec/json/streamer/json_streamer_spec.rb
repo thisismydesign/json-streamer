@@ -263,7 +263,7 @@ RSpec.describe Json::Streamer::JsonStreamer do
     end
 
     context 'symbolize_keys' do
-      let(:hash) { hash = {'object' => example_hash} }
+      let(:hash) { { 'object' => example_hash } }
       let(:params) { { nesting_level: 0, symbolize_keys: true } }
 
       it 'symbolizes keys' do
