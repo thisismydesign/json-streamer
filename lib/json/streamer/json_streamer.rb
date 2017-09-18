@@ -31,19 +31,19 @@ module Json
 
         @parser.value do |v|
           callbacks.value(v) do |desired_object|
-            yield desired_object if conditions.yield_value?(@aggregator.level, @aggregator.key)
+            yield desired_object if conditions.yield_value?(@aggregator)
           end
         end
 
         @parser.end_object do
           callbacks.end_object do |desired_object|
-            yield desired_object if conditions.yield?(@aggregator.level, @aggregator.key)
+            yield desired_object if conditions.yield_object?(@aggregator)
           end
         end
 
         @parser.end_array do
           callbacks.end_array do |desired_object|
-            yield desired_object if conditions.yield?(@aggregator.level, @aggregator.key)
+            yield desired_object if conditions.yield_array?(@aggregator)
           end
         end
 

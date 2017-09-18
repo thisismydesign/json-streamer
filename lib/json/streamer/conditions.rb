@@ -8,9 +8,19 @@ module Json
         @yield_values = yield_values
       end
 
-      def yield_value?(level, key)
-        @yield_values and yield?(level, key)
+      def yield_value?(aggregator)
+        @yield_values and yield?(aggregator.level, aggregator.key)
       end
+
+      def yield_object?(aggregator)
+        yield?(aggregator.level, aggregator.key)
+      end
+
+      def yield_array?(aggregator)
+        yield?(aggregator.level, aggregator.key)
+      end
+
+      private
 
       def yield?(level, key)
         level.eql?(@yield_level) or (not @yield_key.nil? and @yield_key == key)
