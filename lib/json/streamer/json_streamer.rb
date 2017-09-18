@@ -21,18 +21,37 @@ module Json
       end
 
       def get(nesting_level: -1, key: nil, yield_values: true, symbolize_keys: false)
-        conditions = Conditions.new(nesting_level, key, yield_values)
+        conditions = Conditions.new(yield_level: nesting_level, yield_key: key)
+        conditions.yield_value = ->(aggregator:, value:) { false } unless yield_values
+
+        # TODO: deprecate symbolize_keys and move to initialize
         @parser = Parser.new(@event_generator, symbolize_keys: symbolize_keys)
 
         parser.get(conditions) do |obj|
           yield obj
         end
 
-        @file_io.each(@chunk_size) { |chunk| parser << chunk } if @file_io
+        process_io
+      end
+
+      def get_with_conditions(conditions, options = {})
+        @parser = Parser.new(@event_generator, symbolize_keys: options[:symbolize_keys])
+
+        parser.get(conditions) do |obj|
+          yield obj
+        end
+
+        process_io
       end
 
       def aggregator
         parser.aggregator
+      end
+
+      private
+
+      def process_io
+        @file_io.each(@chunk_size) { |chunk| parser << chunk } if @file_io
       end
     end
   end

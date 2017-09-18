@@ -1,29 +1,21 @@
 module Json
   module Streamer
     class Conditions
+      attr_accessor :yield_value, :yield_object, :yield_array
 
-      def initialize(yield_level, yield_key, yield_values)
+      def initialize(yield_level: -1, yield_key: nil)
         @yield_level = yield_level
         @yield_key = yield_key
-        @yield_values = yield_values
-      end
 
-      def yield_value?(aggregator:, value:)
-        @yield_values and yield?(aggregator.level, aggregator.key)
-      end
-
-      def yield_object?(aggregator:, object:)
-        yield?(aggregator.level, aggregator.key)
-      end
-
-      def yield_array?(aggregator:, array:)
-        yield?(aggregator.level, aggregator.key)
+        @yield_value = ->(aggregator:, value:nil) { yield?(aggregator) }
+        @yield_object = ->(aggregator:, object:nil) { yield?(aggregator) }
+        @yield_array = ->(aggregator:, array:nil) { yield?(aggregator) }
       end
 
       private
 
-      def yield?(level, key)
-        level.eql?(@yield_level) or (not @yield_key.nil? and @yield_key == key)
+      def yield?(aggregator)
+        aggregator.level.eql?(@yield_level) or (not @yield_key.nil? and @yield_key == aggregator.key)
       end
     end
   end

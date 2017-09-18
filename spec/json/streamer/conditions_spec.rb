@@ -3,51 +3,67 @@ require 'spec_helper'
 RSpec.describe Json::Streamer::Conditions do
   let(:yield_level) { -1 }
   let(:yield_key) { nil }
-  let(:yield_values) { true }
-  let(:conditions) { Json::Streamer::Conditions.new(yield_level, yield_key, yield_values) }
+  let(:key) { nil }
+  let(:level) { 0 }
+  let(:conditions) { Json::Streamer::Conditions.new(yield_level: yield_level, yield_key: yield_key) }
+  let(:aggregator) { Json::Streamer::Aggregator.new }
+
+  before do
+    allow(aggregator).to receive(:key).and_return(key)
+    allow(aggregator).to receive(:level).and_return(level)
+  end
 
   RSpec.shared_examples "yield" do |method|
     context 'level' do
-      let(:yield_level) { 1 }
+      context 'true' do
+        let(:level) { 1 }
+        let(:yield_level) { 1 }
 
-      it 'returns whether provided level equals yield_level' do
-        expect(conditions.send(method, 1, 'key')).to be
-        expect(conditions.send(method, 2, 'key')).to_not be
+        it 'returns whether provided level equals yield_level' do
+          expect(conditions.send(method).call(aggregator: aggregator)).to be
+        end
+      end
+
+      context 'false' do
+        let(:level) { 2 }
+        let(:yield_level) { 1 }
+
+        it 'returns whether provided level equals yield_level' do
+          expect(conditions.send(method).call(aggregator: aggregator)).to_not be
+        end
       end
     end
 
     context 'key' do
-      context 'yield_key provided' do
-        let(:yield_key) { 'expected' }
+      context 'true' do
+        let(:key) { 'key' }
+        let(:yield_key) { 'key' }
 
         it 'returns whether provided key equals yield_key' do
-          expect(conditions.send(method, 1, 'expected')).to be
-          expect(conditions.send(method, 1, 'not expected')).to_not be
+          expect(conditions.send(method).call(aggregator: aggregator)).to be
         end
       end
 
-      it 'returns false if yield_key is nil' do
-        expect(conditions.send(method, 1, nil)).to_not be
-        expect(conditions.send(method, 1, 'not expected')).to_not be
+      context 'false' do
+        let(:key) { 'else' }
+        let(:yield_key) { 'key' }
+
+        it 'returns whether provided key equals yield_key' do
+          expect(conditions.send(method).call(aggregator: aggregator)).to_not be
+        end
       end
     end
   end
 
-  describe '#yield?' do
-    it_behaves_like "yield", :yield?
+  describe '#yield_value' do
+    it_behaves_like "yield", :yield_value
   end
 
-  describe '#yield_values?' do
-    it_behaves_like "yield", :yield_value?
+  describe '#yield_object' do
+    it_behaves_like "yield", :yield_object
+  end
 
-    context 'yield_values is false' do
-      let(:yield_values) { false }
-      let(:yield_level) { 1 }
-      let(:yield_key) { 'expected' }
-
-      it 'returns false' do
-        expect(conditions.yield_value?(1, 'expected')).to_not be
-      end
-    end
+  describe '#yield_array' do
+    it_behaves_like "yield", :yield_array
   end
 end

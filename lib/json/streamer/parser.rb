@@ -22,19 +22,19 @@ module Json
 
         @event_generator.value do |v|
           @event_consumer.value(v) do |value|
-            yield value if conditions.yield_value?(aggregator: @aggregator, value: value)
+            yield value if conditions.yield_value.call(aggregator: @aggregator, value: value)
           end
         end
 
         @event_generator.end_object do
           @event_consumer.end_object do |object|
-            yield object if conditions.yield_object?(aggregator: @aggregator, object: object)
+            yield object if conditions.yield_object.call(aggregator: @aggregator, object: object)
           end
         end
 
         @event_generator.end_array do
           @event_consumer.end_array do |array|
-            yield array if conditions.yield_array?(aggregator: @aggregator, array: array)
+            yield array if conditions.yield_array.call(aggregator: @aggregator, array: array)
           end
         end
       end

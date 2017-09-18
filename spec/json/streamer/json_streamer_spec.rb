@@ -272,6 +272,36 @@ RSpec.describe Json::Streamer::JsonStreamer do
     end
   end
 
+  context '#get_with_conditions' do
+    let(:example_key) { 'key' }
+    let(:example_value) { 'value' }
+    let(:example_hash) { { example_key => example_value } }
+    let(:example_multi_level_hash) { {object1: example_hash, object2: example_hash, object3: example_hash} }
+    let(:chunk_size) { 10 }
+    let(:json) { JSON.generate(hash) }
+    let(:json_file_mock) { StringIO.new(json) }
+    let(:yielded_objects) { [] }
+    let(:streamer) { Json::Streamer::JsonStreamer.new(json_file_mock, chunk_size) }
+    let(:params) { {yield_key: 'nested_items'} }
+    let(:conditions) { Json::Streamer::Conditions.new(params) }
+
+    before do
+      streamer.get_with_conditions(conditions) do |object|
+        yielded_objects << object
+      end
+    end
+
+    context 'both JSON arrays and objects' do
+      context 'nested keys pointing to array and object' do
+        let(:hash) { { items: { nested_items: [example_hash, example_value, example_hash] }, nested_items: example_hash } }
+
+        it 'yields both array and object' do
+          expect(yielded_objects).to eq([[example_hash, example_value, example_hash], example_hash])
+        end
+      end
+    end
+  end
+
   context '#get (generated)' do
     context 'JSONs with various nesting level and number of objects per level' do
       it 'yields all objects on desired level (checking number of yielded objects)' do
