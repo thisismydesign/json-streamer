@@ -179,6 +179,71 @@ def receive_data(data)
 end
 ```
 
+#### Custom conditions
+
+[v2.0.0]((https://github.com/thisismydesign/json-streamer/releases/tag/v1.3.0)) introduces custom conditions which provide ultimate control over what to yield.
+
+The Conditions API exposes 3 callbacks:
+- `yield_value`
+- `yield_array`
+- `yield_object`
+
+Each of them may be redefined. They are called once the corresponding data (value, array or object) is available. They should return whether the data should be yielded for the outside. They receive the data and the `aggregator` as parameters.
+
+The `aggregator` exposes data about the current state of the party parsed JSON such as:
+- `level` - current level
+- `key` - current key
+- `value` - current value
+- `key_for_level(level)` - key for custom level
+- `value_for_level(level)` - value for custom level
+- `get` - the raw data (in a custom format)
+
+Example usage (inspired by [this issue](https://github.com/thisismydesign/json-streamer/issues/7#issuecomment-330232484)):
+
+```ruby
+conditions = Json::Streamer::Conditions.new
+conditions.yield_value = ->(aggregator:, value:) { false }
+conditions.yield_array = ->(aggregator:, array:) { false }
+conditions.yield_object = lambda do |aggregator:, object:|
+    aggregator.level.eql?(2) && aggregator.key_for_level(1).eql?('items1')
+end
+
+streamer.get_with_conditions(conditions) do |object|
+    p object
+end
+```
+
+Input:
+
+```ruby
+{
+  "other": "stuff",
+  "items1": [
+    {
+      "key1": "value"
+    },
+    {
+      "key2": "value"
+    }
+  ],
+  "items2": [
+    {
+      "key3": "value"
+    },
+    {
+      "key4": "value"
+    }
+  ]
+}
+```
+
+Output:
+
+```ruby
+{"key1"=>"value"}
+{"key2"=>"value"}
+```
+
 ### Legacy API (pre-v1.2)
 
 This functionality is deprecated but kept for compatibility reasons.
