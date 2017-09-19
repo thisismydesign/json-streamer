@@ -181,7 +181,7 @@ end
 
 #### Custom yield conditions
 
-[v2.0.0]((https://github.com/thisismydesign/json-streamer/releases/tag/v1.3.0)) introduces custom conditions which provide ultimate control over what to yield.
+[v2.0.0](https://github.com/thisismydesign/json-streamer/releases/tag/v2.0.0) introduces custom conditions which provide ultimate control over what to yield.
 
 The Conditions API exposes 3 callbacks:
 - `yield_value`
