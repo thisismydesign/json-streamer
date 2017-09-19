@@ -39,11 +39,11 @@ module Json
       end
 
       def key_for_level(level)
-        @aggregator[level][:key] unless @aggregator[level].nil?
+        @aggregator[level - 1][:key] unless @aggregator[level - 1].nil?
       end
 
       def value_for_level(level)
-        @aggregator[level][:key] unless @aggregator[level].nil?
+        @aggregator[level - 1][:key] unless @aggregator[level - 1].nil?
       end
 
       private
