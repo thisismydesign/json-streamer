@@ -179,7 +179,7 @@ def receive_data(data)
 end
 ```
 
-#### Custom conditions
+#### Custom yield conditions
 
 [v2.0.0]((https://github.com/thisismydesign/json-streamer/releases/tag/v1.3.0)) introduces custom conditions which provide ultimate control over what to yield.
 
@@ -190,7 +190,7 @@ The Conditions API exposes 3 callbacks:
 
 Each of them may be redefined. They are called once the corresponding data (value, array or object) is available. They should return whether the data should be yielded for the outside. They receive the data and the `aggregator` as parameters.
 
-The `aggregator` exposes data about the current state of the party parsed JSON such as:
+The `aggregator` exposes data about the current state of the partly parsed JSON such as:
 - `level` - current level
 - `key` - current key
 - `value` - current value
