@@ -331,8 +331,6 @@ RSpec.describe Json::Streamer::JsonStreamer do
               }
           ]
       } }
-      let(:params) { { nesting_level: 0, symbolize_keys: true } }
-
       it 'solves it ^^' do
         expect(yielded_objects).to eq([{"key1"=>"value"}, {"key2"=>"value"}])
       end
