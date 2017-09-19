@@ -300,6 +300,43 @@ RSpec.describe Json::Streamer::JsonStreamer do
         end
       end
     end
+
+    context 'cannot be solved via regular get' do
+      let(:conditions) do
+        conditions = Json::Streamer::Conditions.new
+        conditions.yield_value = ->(aggregator:, value:) { false }
+        conditions.yield_array = ->(aggregator:, array:) { false }
+        conditions.yield_object = lambda do |aggregator:, object:|
+          aggregator.level.eql?(2) && aggregator.key_for_level(1).eql?('items1')
+        end
+        conditions
+      end
+
+      let(:hash) { {
+          "other": "stuff",
+          "items1": [
+              {
+                  "key1": 'value'
+              },
+              {
+                  "key2": 'value'
+              }
+          ],
+          "items2": [
+              {
+                  "key3": 'value'
+              },
+              {
+                  "key4": 'value'
+              }
+          ]
+      } }
+      let(:params) { { nesting_level: 0, symbolize_keys: true } }
+
+      it 'solves it ^^' do
+        expect(yielded_objects).to eq([{"key1"=>"value"}, {"key2"=>"value"}])
+      end
+    end
   end
 
   context '#get (generated)' do
