@@ -45,13 +45,15 @@ Or install it yourself as:
 
 ## Usage
 
+Check the unit tests for more examples ([spec/streamer_spec.rb](spec/json/streamer/json_streamer_spec.rb)).
+
+One `streamer` object handles one set of conditions. For multiple conditions create multiple streamers. For more details see [this discussion](https://github.com/thisismydesign/json-streamer/issues/9).
+
 ```ruby
 require 'json/streamer'
 ```
 
 ### v1.2 (and above) API
-
-Check the unit tests for more examples ([spec/streamer_spec.rb](spec/json/streamer/json_streamer_spec.rb)).
 
 #### Passing IO upfront
 
