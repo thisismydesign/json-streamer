@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-RSpec.describe Json::Streamer::JsonStreamer do
+RSpec.shared_examples 'streamer tests' do
   before do
     if DEBUG
       highlight('INPUT') do
@@ -37,7 +37,7 @@ RSpec.describe Json::Streamer::JsonStreamer do
     let(:json) { JSON.generate(hash) }
     let(:json_file_mock) { StringIO.new(json) }
     let(:yielded_objects) { [] }
-    let(:streamer) { Json::Streamer::JsonStreamer.new(json_file_mock, chunk_size) }
+    let(:streamer) { Json::Streamer::JsonStreamer.new(json_file_mock, chunk_size, parser_type) }
 
     before do
       streamer.get(params) do |object|
@@ -359,5 +359,17 @@ RSpec.describe Json::Streamer::JsonStreamer do
         end
       end
     end
+  end
+end
+
+RSpec.describe Json::Streamer::JsonStreamer do
+  context 'using json/stream' do
+    let(:parser_type) { :pure }
+    it_behaves_like 'streamer tests'
+  end
+
+  context 'using yajl/ffi' do
+    let(:parser_type) { :native }
+    it_behaves_like 'streamer tests'
   end
 end

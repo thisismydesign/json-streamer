@@ -1,5 +1,3 @@
-require "json/stream"
-
 require_relative 'conditions'
 require_relative 'parser'
 
@@ -9,8 +7,8 @@ module Json
 
       attr_reader :parser
 
-      def initialize(file_io = nil, chunk_size = 1000)
-        @event_generator = JSON::Stream::Parser.new
+      def initialize(file_io = nil, chunk_size = 1000, event_generator = :pure)
+        @event_generator = make_event_generator(event_generator)
 
         @file_io = file_io
         @chunk_size = chunk_size
@@ -52,6 +50,19 @@ module Json
 
       def process_io
         @file_io.each(@chunk_size) { |chunk| parser << chunk } if @file_io
+      end
+
+      def make_event_generator(generator_type)
+        case generator_type
+        when :pure
+          require 'json/stream'
+          JSON::Stream::Parser.new
+        when :native
+          require "yajl/ffi"
+          Yajl::FFI::Parser.new
+        else
+          generator_type
+        end
       end
     end
   end

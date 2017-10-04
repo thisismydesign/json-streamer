@@ -12,7 +12,7 @@
 This gem will basically spare you the need to define your own callbacks (i.e. implement an actual JSON parser using `start_object`, `end_object`, `key`, `value`, etc.).
 
 
-*If you're new to this:*
+#### If you're new to this
 
 Streaming is useful for
 - big files that do not fit in the memory (or you'd rather avoid the risk)
@@ -21,11 +21,13 @@ Streaming is useful for
 
 This gem is aimed at making streaming as easy and convenient as possible.
 
-*Performance:*
+#### Pure or native JSON parser
 
-The gem uses JSON::Stream's events in the background. It was chosen because it's a pure Ruby parser.
-A similar implementation can be done using the ~10 times faster Yajl::FFI gem that is dependent on the native YAJL library.
-I did not measure the performance of my implementation on top of these libraries.
+By default JSON::Stream is used to generate events from JSON input. It was chosen because it's a pure Ruby parser. However, if you include `event_generator: :native` and ensure the Gem [Yajl::FFI](https://github.com/dgraham/yajl-ffi) and its native lib is available, that will be used instead:
+```ruby
+Json::Streamer.parser(file_io: File.open('...'), event_generator: :native)
+```
+With YAJL::FFI::Parser as event generator, `json-streamer` is around 2-5 times faster.
 
 ## Installation
 
@@ -42,6 +44,19 @@ And then execute:
 Or install it yourself as:
 
     $ gem install json-streamer
+
+If you want to use Yajl:
+```ruby
+gem 'yajl-ffi'
+```
+
+Then install native libs, on MacOS X
+
+    $ brew install yajl
+
+Or, on Ubuntu
+
+    $ audo apt-get install libyajl2
 
 ## Usage
 
