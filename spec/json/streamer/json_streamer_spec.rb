@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-RSpec.shared_examples 'streamer tests' do
+RSpec.shared_examples 'Json::Streamer::JsonStreamer' do
   before do
     if DEBUG
       highlight('INPUT') do
@@ -37,7 +37,7 @@ RSpec.shared_examples 'streamer tests' do
     let(:json) { JSON.generate(hash) }
     let(:json_file_mock) { StringIO.new(json) }
     let(:yielded_objects) { [] }
-    let(:streamer) { Json::Streamer::JsonStreamer.new(json_file_mock, chunk_size, parser_type) }
+    let(:streamer) { Json::Streamer::JsonStreamer.new(json_file_mock, chunk_size, event_generator) }
 
     before do
       streamer.get(params) do |object|
@@ -363,13 +363,14 @@ RSpec.shared_examples 'streamer tests' do
 end
 
 RSpec.describe Json::Streamer::JsonStreamer do
-  context 'using json/stream' do
-    let(:parser_type) { :pure }
-    it_behaves_like 'streamer tests'
+  context 'using default event generator' do
+    let(:event_generator) { :default }
+    it_behaves_like 'Json::Streamer::JsonStreamer'
   end
 
-  context 'using yajl/ffi' do
-    let(:parser_type) { :native }
-    it_behaves_like 'streamer tests'
+  context 'using custom yajl/ffi event generator' do
+    require "yajl/ffi"
+    let(:event_generator) { Yajl::FFI::Parser.new }
+    it_behaves_like 'Json::Streamer::JsonStreamer'
   end
 end

@@ -17,5 +17,9 @@ RSpec.describe Json::Streamer do
       expect(streamer.instance_variable_get(:@chunk_size)).to eq(chunk_size)
       expect(streamer.instance_variable_get(:@event_generator)).to eq(custom_generator)
     end
+
+    it 'defaults to `JSON::Stream::Parser` event generator' do
+      expect(Json::Streamer.parser.instance_variable_get(:@event_generator)).to be_kind_of(JSON::Stream::Parser)
+    end
   end
 end
