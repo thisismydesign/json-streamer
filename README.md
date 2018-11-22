@@ -2,6 +2,10 @@
 
 #### Ruby utility that supports JSON streaming allowing you to get data based on various criteria (key, nesting level, etc).
 
+<!--- Version informartion -->
+*You are viewing the README of the development version. You can find the README of the latest release (v2.0.1) [here](https://github.com/thisismydesign/json-streamer/releases/tag/v2.0.1).*
+<!--- Version informartion end -->
+
 | Branch | Status |
 | ------ | ------ |
 | Release | [![Build Status](https://travis-ci.org/thisismydesign/json-streamer.svg?branch=release)](https://travis-ci.org/thisismydesign/json-streamer)   [![Coverage Status](https://coveralls.io/repos/github/thisismydesign/json-streamer/badge.svg?branch=release)](https://coveralls.io/github/thisismydesign/json-streamer?branch=release)   [![Gem Version](https://badge.fury.io/rb/json-streamer.svg)](https://badge.fury.io/rb/json-streamer)   [![Total Downloads](http://ruby-gem-downloads-badge.herokuapp.com/json-streamer?type=total)](https://rubygems.org/gems/json-streamer) |
