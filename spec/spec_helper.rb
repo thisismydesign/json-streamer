@@ -2,8 +2,11 @@ require 'bundler/setup'
 Bundler.setup
 
 require 'simplecov'
-SimpleCov.add_filter ['spec']
 require 'coveralls'
+
+SimpleCov.start do
+  add_filter 'spec'
+end
 Coveralls.wear!
 
 require 'stringio'
