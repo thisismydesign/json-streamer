@@ -23,11 +23,12 @@ This gem is aimed at making streaming as easy and convenient as possible.
 
 #### Pure or native JSON parser
 
-By default JSON::Stream is used to generate events from JSON input. It was chosen because it's a pure Ruby parser. However, if you include `event_generator: :native` and ensure the Gem [Yajl::FFI](https://github.com/dgraham/yajl-ffi) and its native lib is available, that will be used instead:
+By default JSON::Stream is used to generate events from JSON input. It was chosen because it's a pure Ruby parser. However, you can pass an instance of  [Yajl::FFI::Parser](https://github.com/dgraham/yajl-ffi) which is backed by the Yajl C library, to use instead:
 ```ruby
-Json::Streamer.parser(file_io: File.open('...'), event_generator: :native)
+require 'yajl/ffi'
+Json::Streamer.parser(file_io: File.open('...'), event_generator: Yajl::FFI::Parser.new)
 ```
-With YAJL::FFI::Parser as event generator, `json-streamer` is around 2-5 times faster.
+With YAJL::FFI::Parser as event generator, `json-streamer` is around 2-5 times faster. This requires the Yajl C library to be available on the platform, see below.
 
 ## Installation
 

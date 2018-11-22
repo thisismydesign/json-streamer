@@ -37,7 +37,7 @@ RSpec.shared_examples 'streamer tests' do
     let(:json) { JSON.generate(hash) }
     let(:json_file_mock) { StringIO.new(json) }
     let(:yielded_objects) { [] }
-    let(:streamer) { Json::Streamer::JsonStreamer.new(json_file_mock, chunk_size, parser_type) }
+    let(:streamer) { Json::Streamer::JsonStreamer.new(json_file_mock, chunk_size, event_generator) }
 
     before do
       streamer.get(params) do |object|
@@ -364,12 +364,13 @@ end
 
 RSpec.describe Json::Streamer::JsonStreamer do
   context 'using json/stream' do
-    let(:parser_type) { :pure }
+    let(:event_generator) { :default }
     it_behaves_like 'streamer tests'
   end
 
   context 'using yajl/ffi' do
-    let(:parser_type) { :native }
+    require 'yajl/ffi'
+    let(:event_generator) { Yajl::FFI::Parser.new }
     it_behaves_like 'streamer tests'
   end
 end
