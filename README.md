@@ -7,10 +7,9 @@
 | Release | [![Build Status](https://travis-ci.org/thisismydesign/json-streamer.svg?branch=release)](https://travis-ci.org/thisismydesign/json-streamer)   [![Coverage Status](https://coveralls.io/repos/github/thisismydesign/json-streamer/badge.svg?branch=release)](https://coveralls.io/github/thisismydesign/json-streamer?branch=release)   [![Gem Version](https://badge.fury.io/rb/json-streamer.svg)](https://badge.fury.io/rb/json-streamer)   [![Total Downloads](http://ruby-gem-downloads-badge.herokuapp.com/json-streamer?type=total)](https://rubygems.org/gems/json-streamer) |
 | Development | [![Build Status](https://travis-ci.org/thisismydesign/json-streamer.svg?branch=master)](https://travis-ci.org/thisismydesign/json-streamer)   [![Coverage Status](https://coveralls.io/repos/github/thisismydesign/json-streamer/badge.svg?branch=master)](https://coveralls.io/github/thisismydesign/json-streamer?branch=master) |
 
-*If you've tried JSON streaming with other Ruby libraries before (e.g. [JSON::Stream](https://github.com/dgraham/json-stream), [Yajl::FFI](https://github.com/dgraham/yajl-ffi)):*
+####  If you've tried JSON streaming with other Ruby libraries before (e.g. [JSON::Stream](https://github.com/dgraham/json-stream), [Yajl::FFI](https://github.com/dgraham/yajl-ffi))
 
 This gem will basically spare you the need to define your own callbacks (i.e. implement an actual JSON parser using `start_object`, `end_object`, `key`, `value`, etc.).
-
 
 #### If you're new to this
 
@@ -21,13 +20,15 @@ Streaming is useful for
 
 This gem is aimed at making streaming as easy and convenient as possible.
 
-#### Pure or native JSON parser
+#### Performance
 
-By default JSON::Stream is used to generate events from JSON input. It was chosen because it's a pure Ruby parser. However, if you include `event_generator: :native` and ensure the Gem [Yajl::FFI](https://github.com/dgraham/yajl-ffi) and its native lib is available, that will be used instead:
-```ruby
-Json::Streamer.parser(file_io: File.open('...'), event_generator: :native)
-```
-With YAJL::FFI::Parser as event generator, `json-streamer` is around 2-5 times faster.
+Highly depends on the event generator. Out of the box the gem uses [JSON::Stream](https://github.com/dgraham/json-stream). It was chosen because it's a pure Ruby parser with no runtime dependencies. You can use any custom event generator, such as [Yajl::FFI](https://github.com/dgraham/yajl-ffi) which is dependent on the native YAJL library and is [~10 times faster](https://github.com/dgraham/yajl-ffi#performance). See the [Custom event generators](#custom-event-generators) chapter.
+
+I did not measure the performance of my implementation on top of these libraries.
+
+#### Dependencies
+
+The gem's single runtime dependency is [JSON::Stream](https://github.com/dgraham/json-stream). It is only loaded if the default event generator is used.
 
 ## Installation
 
@@ -44,19 +45,6 @@ And then execute:
 Or install it yourself as:
 
     $ gem install json-streamer
-
-If you want to use Yajl:
-```ruby
-gem 'yajl-ffi'
-```
-
-Then install native libs, on MacOS X
-
-    $ brew install yajl
-
-Or, on Ubuntu
-
-    $ audo apt-get install libyajl2
 
 ## Usage
 
@@ -195,6 +183,18 @@ def receive_data(data)
     streamer << data
 end
 ```
+
+#### Custom event generators
+
+Since [v2.1.0](https://github.com/thisismydesign/json-streamer/releases/tag/v2.1.0)
+
+```ruby
+require "yajl/ffi"
+
+Json::Streamer.parser(event_generator: Yajl::FFI::Parser.new)
+```
+
+Any parser can be used that provides the right events. The gem is tested with [Yajl::FFI](https://github.com/dgraham/yajl-ffi) and [JSON::Stream](https://github.com/dgraham/json-stream).
 
 #### Custom yield conditions
 
