@@ -22,7 +22,6 @@ module Json
         conditions = Conditions.new(yield_level: nesting_level, yield_key: key)
         conditions.yield_value = ->(aggregator:, value:) { false } unless yield_values
 
-        # TODO: deprecate symbolize_keys and move to initialize
         @parser = Parser.new(@event_generator, symbolize_keys: symbolize_keys)
 
         parser.get(conditions) do |obj|
