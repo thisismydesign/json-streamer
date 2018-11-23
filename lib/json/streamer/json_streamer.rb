@@ -23,22 +23,38 @@ module Json
         conditions.yield_value = ->(aggregator:, value:) { false } unless yield_values
 
         @parser = Parser.new(@event_generator, symbolize_keys: symbolize_keys)
+        unyielded_items = []
 
         parser.get(conditions) do |obj|
-          yield obj
+          if block_given?
+            yield obj
+          else
+            unyielded_items.push(obj)
+          end
+
+          obj
         end
 
         process_io
+        
+        unyielded_items
       end
 
       def get_with_conditions(conditions, options = {})
         @parser = Parser.new(@event_generator, symbolize_keys: options[:symbolize_keys])
+        unyielded_items = []
 
         parser.get(conditions) do |obj|
-          yield obj
+          if block_given?
+            yield obj
+          else
+            unyielded_items.push(obj)
+          end
         end
 
         process_io
+
+        unyielded_items
       end
 
       def aggregator

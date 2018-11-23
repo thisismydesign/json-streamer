@@ -12,29 +12,6 @@ RSpec.describe Json::Streamer do
     let(:hash) { Array.new(size) { content } }
     let!(:json_file_mock) { StringIO.new(JSON.generate(hash)) }
 
-    context 'without streaming' do
-      let(:size) { 2**17 }
-
-      context 'array of objects parsed with JSON::Stream' do
-        let(:content) { example_hash }
-
-        it 'should increase memory consumption' do
-          p "Number of elements: #{size}"
-          memory_usage_before_parsing = current_memory_usage
-          p "Memory consumption before parsing: #{memory_usage_before_parsing} MB"
-
-          object = JSON::Stream::Parser.parse(json_file_mock)
-          expect(object.length).to eq(size)
-
-          memory_usage_after_parsing = current_memory_usage
-          p "Memory consumption after parsing: #{memory_usage_after_parsing.round} MB"
-
-          expect(memory_usage_after_parsing).to be > 1.5 * memory_usage_before_parsing
-          p "With JSON::Stream memory consumption increased with at least 150% during processing."
-        end
-      end
-    end
-
     RSpec.shared_examples 'does not consumne memory' do
       it 'should NOT increase memory consumption' do
         p "Number of elements: #{size}"
@@ -52,7 +29,7 @@ RSpec.describe Json::Streamer do
         p "Memory consumption after parsing: #{memory_usage_after_parsing.round} MB"
 
         expect(memory_usage_after_parsing).to be < 1.1 * memory_usage_before_parsing
-        p "With JSON::Streamer memory consumption did not increase significantly during processing."
+        p "With JSON::Streamer memory consumption did not increase by more than 10% during processing."
       end
     end
 
@@ -73,6 +50,27 @@ RSpec.describe Json::Streamer do
         let(:content) { [rand] }
 
         it_behaves_like 'does not consumne memory'
+      end
+    end
+
+    context 'without streaming' do
+      context 'array of objects parsed with JSON::Stream' do
+        let(:content) { example_hash }
+
+        it 'should increase memory consumption' do
+          p "Number of elements: #{size}"
+          memory_usage_before_parsing = current_memory_usage
+          p "Memory consumption before parsing: #{memory_usage_before_parsing} MB"
+
+          object = JSON::Stream::Parser.parse(json_file_mock)
+          expect(object.length).to eq(size)
+
+          memory_usage_after_parsing = current_memory_usage
+          p "Memory consumption after parsing: #{memory_usage_after_parsing.round} MB"
+
+          expect(memory_usage_after_parsing).to be > 1.5 * memory_usage_before_parsing
+          p "With JSON::Stream memory consumption increased by at least 50% during processing."
+        end
       end
     end
   end

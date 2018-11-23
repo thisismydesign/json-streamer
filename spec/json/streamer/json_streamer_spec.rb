@@ -1,6 +1,16 @@
 require 'spec_helper'
 
 RSpec.shared_examples 'Json::Streamer::JsonStreamer' do
+  let(:example_key) { 'key' }
+  let(:example_value) { 'value' }
+  let(:example_hash) { { example_key => example_value } }
+  let(:example_multi_level_hash) { {object1: example_hash, object2: example_hash, object3: example_hash} }
+  let(:chunk_size) { 10 }
+  let(:json) { JSON.generate(hash) }
+  let(:json_file_mock) { StringIO.new(json) }
+  let(:yielded_objects) { [] }
+  let(:streamer) { described_class.new(json_file_mock, chunk_size, event_generator) }
+
   before do
     if DEBUG
       highlight('INPUT') do
@@ -28,311 +38,338 @@ RSpec.shared_examples 'Json::Streamer::JsonStreamer' do
     end
   end
 
-  describe '#get' do
-    let(:example_key) { 'key' }
-    let(:example_value) { 'value' }
-    let(:example_hash) { { example_key => example_value } }
-    let(:example_multi_level_hash) { {object1: example_hash, object2: example_hash, object3: example_hash} }
-    let(:chunk_size) { 10 }
-    let(:json) { JSON.generate(hash) }
-    let(:json_file_mock) { StringIO.new(json) }
-    let(:yielded_objects) { [] }
-    let(:streamer) { Json::Streamer::JsonStreamer.new(json_file_mock, chunk_size, event_generator) }
+  RSpec.shared_examples 'an iterable object' do
+    let(:hash) { example_multi_level_hash }
 
-    before do
-      streamer.get(params) do |object|
-        yielded_objects << object
+    context 'when no block is passed' do
+      let(:subject) { streamer.send(method, params) }
+
+      it 'returns an Enumerable' do
+        p subject
+        expect(subject).to be_kind_of(Enumerable)
+      end
+
+      it 'returns array of items that would have been yielded' do
+        expect(subject).to eq(Array.new(3) { example_hash })
       end
     end
 
-    context 'by nesting_level' do
-      context 'JSON objects' do
-        context '0th level of empty' do
-          let(:hash) { {} }
-          let(:params) { { nesting_level: 0 } }
+    context 'when a block is passed' do
+      it 'yields' do
+        expect do |block|
+          streamer.send(method, params, &block)
+        end.to yield_control
+      end
+    end
+  end
 
-          it 'yields empty JSON object' do
-            expect(yielded_objects).to eq([{}])
+  describe '#get' do
+    describe 'API interaction' do
+      let(:params) { { nesting_level: 1 } }
+      let(:method) { :get }
+
+      it_behaves_like "an iterable object"
+    end
+
+    context 'when block is passed' do
+      before do
+        streamer.get(params) do |object|
+          yielded_objects << object
+        end
+      end
+
+      context 'by nesting_level' do
+        context 'JSON objects' do
+          context '0th level of empty' do
+            let(:hash) { {} }
+            let(:params) { { nesting_level: 0 } }
+
+            it 'yields empty JSON object' do
+              expect(yielded_objects).to eq([{}])
+            end
+          end
+
+          context '0th level' do
+            let(:hash) { {example_key => example_hash} }
+            let(:params) { { nesting_level: 0 } }
+
+            it 'yields whole JSON' do
+              expect(yielded_objects).to eq([{ example_key => example_hash }])
+            end
+          end
+
+          context '1st level' do
+            let(:hash) { example_multi_level_hash }
+            let(:params) { { nesting_level: 1 } }
+
+            it 'yields objects within JSON object' do
+              expect(yielded_objects).to eq([example_hash, example_hash, example_hash])
+            end
           end
         end
 
-        context '0th level' do
-          let(:hash) { {example_key => example_hash} }
-          let(:params) { { nesting_level: 0 } }
+        context 'JSON arrays' do
+          context '0th level of flat' do
+            let(:hash) { [example_value, example_value] }
+            let(:params) { { nesting_level: 0 } }
 
-          it 'yields whole JSON' do
-            expect(yielded_objects).to eq([{ example_key => example_hash }])
+            it 'yields whole array' do
+              expect(yielded_objects).to eq([[example_value, example_value]])
+            end
           end
-        end
 
-        context '1st level' do
-          let(:hash) { example_multi_level_hash }
-          let(:params) { { nesting_level: 1 } }
+          context '1st level of flat' do
+            let(:hash) { Array.new(10) {example_hash} }
+            let(:params) { { nesting_level: 1 } }
 
-          it 'yields objects within JSON object' do
-            expect(yielded_objects).to eq([example_hash, example_hash, example_hash])
+            it 'yields objects in array' do
+              expect(yielded_objects).to eq(hash)
+            end
+          end
+
+          context '1st level of multi-level' do
+            let(:hash) { [[example_hash, example_hash, example_hash]] }
+            let(:params) { { nesting_level: 1 } }
+
+            it 'yields nested array' do
+              expect(yielded_objects).to eq([[example_hash, example_hash, example_hash]])
+            end
+          end
+
+          context '2nd level of multi-level' do
+            let(:hash) { [[example_hash, example_hash, example_hash]] }
+            let(:params) { { nesting_level: 2 } }
+
+            it 'yields nested array elements' do
+              expect(yielded_objects).to eq([example_hash, example_hash, example_hash])
+            end
           end
         end
       end
 
-      context 'JSON arrays' do
-        context '0th level of flat' do
-          let(:hash) { [example_value, example_value] }
-          let(:params) { { nesting_level: 0 } }
+      context 'by key' do
+        context 'JSON objects' do
+          context 'flat, key pointing to value' do
+            let(:hash) { example_hash }
+            let(:params) { { key: example_key } }
 
-          it 'yields whole array' do
-            expect(yielded_objects).to eq([[example_value, example_value]])
+            it 'yields value' do
+              expect(yielded_objects).to eq([example_value])
+            end
+          end
+
+          context 'multi level, key pointing to values' do
+            let(:hash) { example_multi_level_hash }
+            let(:params) { { key: example_key } }
+
+            it 'yields values' do
+              expect(yielded_objects).to eq([example_value, example_value, example_value])
+            end
+          end
+
+          context 'multi level, key pointing to values and objects' do
+            let(:hash) { example_multi_level_hash }
+            let(:params) { { key: example_key } }
+
+            it 'yields values and objects from all levels' do
+              expect(yielded_objects).to eq([example_value, example_value, example_value])
+            end
           end
         end
 
-        context '1st level of flat' do
-          let(:hash) { Array.new(10) {example_hash} }
-          let(:params) { { nesting_level: 1 } }
+        context 'JSON arrays' do
+          context 'key pointing to nested array' do
+            let(:hash) { { items: [[[example_hash, example_hash, example_hash]]] } }
+            let(:params) { { nesting_level: 1 } }
 
-          it 'yields objects in array' do
-            expect(yielded_objects).to eq(hash)
+            it 'does not yield trailing empty arrays' do
+              expect(yielded_objects.length).to eq(1)
+            end
+
+            it 'yields nested arrays with the correct nesting' do
+              expect(yielded_objects).to eq([[[[example_hash, example_hash, example_hash]]]])
+            end
+          end
+
+          context 'keys pointing to array' do
+            let(:hash) { { items: [example_hash, example_value, example_hash] } }
+            let(:params) { { key: 'items' } }
+
+            it 'yields array' do
+              expect(yielded_objects).to eq([[example_hash, example_value, example_hash]])
+            end
+          end
+
+          context 'nested keys pointing to array' do
+            let(:hash) { { items: { nested_items: [example_hash, example_value, example_hash] } } }
+            let(:params) { { key: 'items' } }
+
+            it 'keeps key pointing to arrays' do
+              expect(yielded_objects).to eq([{'nested_items' => [example_hash, example_value, example_hash]}])
+            end
           end
         end
 
-        context '1st level of multi-level' do
-          let(:hash) { [[example_hash, example_hash, example_hash]] }
-          let(:params) { { nesting_level: 1 } }
+        context 'both JSON arrays and objects' do
+          context 'nested keys pointing to array and object' do
+            let(:hash) { { items: { nested_items: [example_hash, example_value, example_hash] }, nested_items: example_hash } }
+            let(:params) { {key: 'nested_items'} }
 
-          it 'yields nested array' do
-            expect(yielded_objects).to eq([[example_hash, example_hash, example_hash]])
+            it 'yields both array and object' do
+              expect(yielded_objects).to eq([[example_hash, example_value, example_hash], example_hash])
+            end
           end
         end
+      end
 
-        context '2nd level of multi-level' do
-          let(:hash) { [[example_hash, example_hash, example_hash]] }
+      context 'yield_values' do
+        let(:hash) { { obj: example_hash, obj2: { nested_obj: example_hash } } }
+
+        context 'enabled' do
           let(:params) { { nesting_level: 2 } }
 
-          it 'yields nested array elements' do
+          it 'yields values from given level' do
+            expect(yielded_objects).to eq([example_value, example_hash])
+          end
+        end
+
+        context 'disabled' do
+          let(:params) { { nesting_level: 2, yield_values: false } }
+
+          it 'does not yield values from given level' do
+            expect(yielded_objects).to eq([example_hash])
+          end
+        end
+      end
+
+      context 'EventMachine style input' do
+        let(:streamer) { Json::Streamer::JsonStreamer.new }
+        let(:hash) { example_multi_level_hash }
+        let(:params) { { nesting_level:1 } }
+
+        context 'input piped to parser' do
+          it 'yields objects within JSON object' do
+            streamer.parser << json
+
+            expect(yielded_objects).to eq([example_hash, example_hash, example_hash])
+          end
+        end
+
+        context 'chunked input piped to parser' do
+          it 'yields objects within JSON object' do
+            json_file_mock.each(chunk_size) do |chunk|
+              streamer.parser << chunk
+            end
+
             expect(yielded_objects).to eq([example_hash, example_hash, example_hash])
           end
         end
       end
-    end
 
-    context 'by key' do
-      context 'JSON objects' do
-        context 'flat, key pointing to value' do
-          let(:hash) { example_hash }
+      context 'finished parsing' do
+        let(:hash) { { obj: example_hash } }
+        let(:params) { { nesting_level: 0 } }
+
+        it 'removes object from local store' do
+          expect(streamer.aggregator).to be_empty
+        end
+      end
+
+      context 'edge cases' do
+        context 'overlapping condition' do
+          let(:hash) { { example_key => { example_key => example_hash } } }
           let(:params) { { key: example_key } }
 
-          it 'yields value' do
-            expect(yielded_objects).to eq([example_value])
+          it 'consumes object on first occurrence' do
+            expect(yielded_objects).to eq([example_value, {}, {}])
           end
         end
 
-        context 'multi level, key pointing to values' do
-          let(:hash) { example_multi_level_hash }
-          let(:params) { { key: example_key } }
+        context 'nesting_level and key pointing to the same object' do
+          let(:hash) { { items: { nested_items: [example_value, example_value, example_value] } } }
+          let(:params) { { key: 'nested_items', nesting_level: 2 } }
 
-          it 'yields values' do
-            expect(yielded_objects).to eq([example_value, example_value, example_value])
-          end
-        end
-
-        context 'multi level, key pointing to values and objects' do
-          let(:hash) { example_multi_level_hash }
-          let(:params) { { key: example_key } }
-
-          it 'yields values and objects from all levels' do
-            expect(yielded_objects).to eq([example_value, example_value, example_value])
+          it 'yields the object once' do
+            expect(yielded_objects).to eq([[example_value, example_value, example_value]])
           end
         end
       end
 
-      context 'JSON arrays' do
-        context 'key pointing to nested array' do
-          let(:hash) { { items: [[[example_hash, example_hash, example_hash]]] } }
-          let(:params) { { nesting_level: 1 } }
+      context 'symbolize_keys' do
+        let(:hash) { { 'object' => example_hash } }
+        let(:params) { { nesting_level: 0, symbolize_keys: true } }
 
-          it 'does not yield trailing empty arrays' do
-            expect(yielded_objects.length).to eq(1)
-          end
-
-          it 'yields nested arrays with the correct nesting' do
-            expect(yielded_objects).to eq([[[[example_hash, example_hash, example_hash]]]])
-          end
+        it 'symbolizes keys' do
+          expect(yielded_objects).to eq([{ object: { key: 'value' } }])
         end
+      end
+    end
+  end
 
-        context 'keys pointing to array' do
-          let(:hash) { { items: [example_hash, example_value, example_hash] } }
-          let(:params) { { key: 'items' } }
+  describe '#get_with_conditions' do
+    let(:conditions) { Json::Streamer::Conditions.new(yield_key: 'nested_items') }
 
-          it 'yields array' do
-            expect(yielded_objects).to eq([[example_hash, example_value, example_hash]])
-          end
-        end
+    describe 'API interaction' do
+      let(:params) do
+        conditions = Json::Streamer::Conditions.new
+        conditions.yield_object = ->(aggregator:, object:) { aggregator.level.eql?(1) }
+        conditions
+      end
+      let(:method) { :get_with_conditions }
 
-        context 'nested keys pointing to array' do
-          let(:hash) { { items: { nested_items: [example_hash, example_value, example_hash] } } }
-          let(:params) { { key: 'items' } }
+      it_behaves_like "an iterable object"
+    end
 
-          it 'keeps key pointing to arrays' do
-            expect(yielded_objects).to eq([{'nested_items' => [example_hash, example_value, example_hash]}])
-          end
+    context 'when block is passed' do
+      before do
+        streamer.get_with_conditions(conditions) do |object|
+          yielded_objects << object
         end
       end
 
       context 'both JSON arrays and objects' do
         context 'nested keys pointing to array and object' do
           let(:hash) { { items: { nested_items: [example_hash, example_value, example_hash] }, nested_items: example_hash } }
-          let(:params) { {key: 'nested_items'} }
 
           it 'yields both array and object' do
             expect(yielded_objects).to eq([[example_hash, example_value, example_hash], example_hash])
           end
         end
       end
-    end
 
-    context 'yield_values' do
-      let(:hash) { { obj: example_hash, obj2: { nested_obj: example_hash } } }
-
-      context 'enabled' do
-        let(:params) { { nesting_level: 2 } }
-
-        it 'yields values from given level' do
-          expect(yielded_objects).to eq([example_value, example_hash])
-        end
-      end
-
-      context 'disabled' do
-        let(:params) { { nesting_level: 2, yield_values: false } }
-
-        it 'does not yield values from given level' do
-          expect(yielded_objects).to eq([example_hash])
-        end
-      end
-    end
-
-    context 'EventMachine style input' do
-      let(:streamer) { Json::Streamer::JsonStreamer.new }
-      let(:hash) { example_multi_level_hash }
-      let(:params) { { nesting_level:1 } }
-
-      context 'input piped to parser' do
-        it 'yields objects within JSON object' do
-          streamer.parser << json
-
-          expect(yielded_objects).to eq([example_hash, example_hash, example_hash])
-        end
-      end
-
-      context 'chunked input piped to parser' do
-        it 'yields objects within JSON object' do
-          json_file_mock.each(chunk_size) do |chunk|
-            streamer.parser << chunk
+      context 'cannot be solved via regular get' do
+        let(:conditions) do
+          conditions = Json::Streamer::Conditions.new
+          conditions.yield_value = ->(aggregator:, value:) { false }
+          conditions.yield_array = ->(aggregator:, array:) { false }
+          conditions.yield_object = lambda do |aggregator:, object:|
+            aggregator.level.eql?(2) && aggregator.key_for_level(1).eql?('items1')
           end
-
-          expect(yielded_objects).to eq([example_hash, example_hash, example_hash])
+          conditions
         end
-      end
-    end
 
-    context 'finished parsing' do
-      let(:hash) { { obj: example_hash } }
-      let(:params) { { nesting_level: 0 } }
-
-      it 'removes object from local store' do
-        expect(streamer.aggregator).to be_empty
-      end
-    end
-
-    context 'edge cases' do
-      context 'overlapping condition' do
-        let(:hash) { { example_key => { example_key => example_hash } } }
-        let(:params) { { key: example_key } }
-
-        it 'consumes object on first occurrence' do
-          expect(yielded_objects).to eq([example_value, {}, {}])
+        let(:hash) { {
+            "other": "stuff",
+            "items1": [
+                {
+                    "key1": 'value'
+                },
+                {
+                    "key2": 'value'
+                }
+            ],
+            "items2": [
+                {
+                    "key3": 'value'
+                },
+                {
+                    "key4": 'value'
+                }
+            ]
+        } }
+        it 'solves it ^^' do
+          expect(yielded_objects).to eq([{"key1"=>"value"}, {"key2"=>"value"}])
         end
-      end
-
-      context 'nesting_level and key pointing to the same object' do
-        let(:hash) { { items: { nested_items: [example_value, example_value, example_value] } } }
-        let(:params) { { key: 'nested_items', nesting_level: 2 } }
-
-        it 'yields the object once' do
-          expect(yielded_objects).to eq([[example_value, example_value, example_value]])
-        end
-      end
-    end
-
-    context 'symbolize_keys' do
-      let(:hash) { { 'object' => example_hash } }
-      let(:params) { { nesting_level: 0, symbolize_keys: true } }
-
-      it 'symbolizes keys' do
-        expect(yielded_objects).to eq([{ object: { key: 'value' } }])
-      end
-    end
-  end
-
-  context '#get_with_conditions' do
-    let(:example_key) { 'key' }
-    let(:example_value) { 'value' }
-    let(:example_hash) { { example_key => example_value } }
-    let(:example_multi_level_hash) { {object1: example_hash, object2: example_hash, object3: example_hash} }
-    let(:chunk_size) { 10 }
-    let(:json) { JSON.generate(hash) }
-    let(:json_file_mock) { StringIO.new(json) }
-    let(:yielded_objects) { [] }
-    let(:streamer) { Json::Streamer::JsonStreamer.new(json_file_mock, chunk_size) }
-    let(:params) { {yield_key: 'nested_items'} }
-    let(:conditions) { Json::Streamer::Conditions.new(params) }
-
-    before do
-      streamer.get_with_conditions(conditions) do |object|
-        yielded_objects << object
-      end
-    end
-
-    context 'both JSON arrays and objects' do
-      context 'nested keys pointing to array and object' do
-        let(:hash) { { items: { nested_items: [example_hash, example_value, example_hash] }, nested_items: example_hash } }
-
-        it 'yields both array and object' do
-          expect(yielded_objects).to eq([[example_hash, example_value, example_hash], example_hash])
-        end
-      end
-    end
-
-    context 'cannot be solved via regular get' do
-      let(:conditions) do
-        conditions = Json::Streamer::Conditions.new
-        conditions.yield_value = ->(aggregator:, value:) { false }
-        conditions.yield_array = ->(aggregator:, array:) { false }
-        conditions.yield_object = lambda do |aggregator:, object:|
-          aggregator.level.eql?(2) && aggregator.key_for_level(1).eql?('items1')
-        end
-        conditions
-      end
-
-      let(:hash) { {
-          "other": "stuff",
-          "items1": [
-              {
-                  "key1": 'value'
-              },
-              {
-                  "key2": 'value'
-              }
-          ],
-          "items2": [
-              {
-                  "key3": 'value'
-              },
-              {
-                  "key4": 'value'
-              }
-          ]
-      } }
-      it 'solves it ^^' do
-        expect(yielded_objects).to eq([{"key1"=>"value"}, {"key2"=>"value"}])
       end
     end
   end
