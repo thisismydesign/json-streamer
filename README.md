@@ -1,6 +1,12 @@
 # Json::Streamer
 
-#### Ruby utility that supports JSON streaming allowing you to get data based on various criteria (key, nesting level, etc).
+#### Ruby gem for getting data from JSON streams based on various criteria (key, nesting level, etc).
+
+Status and support
+
+- &#x2714; stable
+- &#x2714; supported
+- &#x2716; no ongoing development
 
 <!--- Version informartion -->
 *You are viewing the README of the development version. You can find the README of the latest release (v2.0.1) [here](https://github.com/thisismydesign/json-streamer/releases/tag/v2.0.1).*
@@ -52,17 +58,13 @@ Or install it yourself as:
 
 ## Usage
 
-Check the unit tests for more examples ([spec/streamer_spec.rb](spec/json/streamer/json_streamer_spec.rb)).
-
-One `streamer` object handles one set of conditions. For multiple conditions create multiple streamers. For more details see [this discussion](https://github.com/thisismydesign/json-streamer/issues/9).
-
 ```ruby
 require 'json/streamer'
 ```
 
-### v1.2 (and above) API
-
 #### Passing IO upfront
+
+Since [v1.2.0](https://github.com/thisismydesign/json-streamer/releases/tag/v1.2.0)
 
 ```ruby
 file_stream = File.open('data.json', 'r')
@@ -202,7 +204,9 @@ Any parser can be used that provides the right events. The gem is tested with [Y
 
 #### Custom yield conditions
 
-[v2.0.0](https://github.com/thisismydesign/json-streamer/releases/tag/v2.0.0) introduces custom conditions which provide ultimate control over what to yield.
+Since [v2.0.0](https://github.com/thisismydesign/json-streamer/releases/tag/v2.0.0)
+
+Custom conditions provide ultimate control over what to yield.
 
 The Conditions API exposes 3 callbacks:
 - `yield_value`
@@ -265,7 +269,15 @@ Output:
 {"key2"=>"value"}
 ```
 
-### Legacy API (pre-v1.2)
+#### Other usage information
+
+Check the unit tests for more examples ([spec/streamer_spec.rb](spec/json/streamer/json_streamer_spec.rb)).
+
+One `streamer` object handles one set of conditions. For multiple conditions create multiple streamers. For more details see [this discussion](https://github.com/thisismydesign/json-streamer/issues/9).
+
+#### Deprecated API
+
+Pre [v1.2.0](https://github.com/thisismydesign/json-streamer/releases/tag/v1.2.0)
 
 This functionality is deprecated but kept for compatibility reasons.
 
@@ -279,13 +291,11 @@ streamer = Json::Streamer::JsonStreamer.new
 streamer.parser << data
 ```
 
-## Feedback
+## Contribution and feedback
 
-Any feedback is much appreciated.
+This project is built around known use-cases. If have one that isn't covered don't hesitate to open an issue and start a discussion.
 
-I can only tailor this project to fit use-cases I know about - which are usually my own ones. If you find that this might be the right direction to solve your problem too but you find that it's suboptimal or lacks features don't hesitate to contact me.
-
-Please let me know if you make use of this project so that I can prioritize further efforts.
+Bug reports and pull requests are welcome on GitHub at https://github.com/thisismydesign/json-streamer. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
 
 ## Conventions
 
@@ -296,10 +306,6 @@ This gem is developed using the following conventions:
 - [RubyGems' guide on gem naming](http://guides.rubygems.org/name-your-gem/)
 - [RFC memo about key words used to Indicate Requirement Levels](https://tools.ietf.org/html/rfc2119)
 - [Bundler improvements](https://github.com/thisismydesign/bundler-improvements)
-
-## Contributing
-
-Bug reports and pull requests are welcome on GitHub at https://github.com/thisismydesign/json-streamer. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
 
 ## License
 
