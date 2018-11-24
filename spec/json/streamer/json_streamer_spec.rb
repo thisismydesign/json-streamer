@@ -45,7 +45,6 @@ RSpec.shared_examples 'Json::Streamer::JsonStreamer' do
       let(:subject) { streamer.send(method, params) }
 
       it 'returns an Enumerable' do
-        p subject
         expect(subject).to be_kind_of(Enumerable)
       end
 
@@ -59,6 +58,13 @@ RSpec.shared_examples 'Json::Streamer::JsonStreamer' do
         expect do |block|
           streamer.send(method, params, &block)
         end.to yield_control
+      end
+    end
+
+    context 'when an empty block is passed' do
+      it 'returns an empty Enumerable' do
+        unyielded_objects = streamer.send(method, params) {}
+        expect(unyielded_objects).to eq([])
       end
     end
   end

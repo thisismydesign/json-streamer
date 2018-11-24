@@ -269,6 +269,52 @@ Output:
 {"key2"=>"value"}
 ```
 
+#### Get an Enumerable when not passing a block
+
+Since [v2.1.0](https://github.com/thisismydesign/json-streamer/releases/tag/v2.1.0)
+
+When _not_ passed a block both `get` and `get_with_conditions` return an enumerator of the requested objects. When passed a block they return an empty enumerator. This means that **when _not_ passed a block the requested objects will accumulate in memory**.
+
+Without block
+
+```ruby
+objects = streamer.get(nesting_level:1)
+p objects
+```
+
+Input:
+```json
+{
+    "object1": "first_level_value",
+    "object2": {}
+}
+```
+
+Output:
+```ruby
+["first_level_value", {}]
+```
+
+With block
+
+```ruby
+unyielded_objects = streamer.get(nesting_level:1) { |object| do_something(object) }
+p unyielded_objects
+```
+
+Input:
+```json
+{
+    "object1": "first_level_value",
+    "object2": {}
+}
+```
+
+Output:
+```ruby
+[]
+```
+
 #### Other usage information
 
 Check the unit tests for more examples ([spec/streamer_spec.rb](spec/json/streamer/json_streamer_spec.rb)).
