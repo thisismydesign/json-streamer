@@ -9,7 +9,7 @@ Status and support
 - &#x2716; no ongoing development
 
 <!--- Version informartion -->
-*You are viewing the README of version [v2.1.0[0m](https://github.com/thisismydesign/json-streamer/releases/tag/v2.1.0[0m). You can find other releases [here](https://github.com/thisismydesign/json-streamer/releases).*
+*You are viewing the README of version [v2.1.0](https://github.com/thisismydesign/json-streamer/releases/tag/v2.1.0). You can find other releases [here](https://github.com/thisismydesign/json-streamer/releases).*
 <!--- Version informartion end -->
 
 | Branch | Status |
