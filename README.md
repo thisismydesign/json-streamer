@@ -345,13 +345,7 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/thisis
 
 ## Conventions
 
-This gem is developed using the following conventions:
-- [Bundler's guide for developing a gem](http://bundler.io/v1.14/guides/creating_gem.html)
-- [Better Specs](http://www.betterspecs.org/)
-- [Semantic versioning](http://semver.org/)
-- [RubyGems' guide on gem naming](http://guides.rubygems.org/name-your-gem/)
-- [RFC memo about key words used to Indicate Requirement Levels](https://tools.ietf.org/html/rfc2119)
-- [Bundler improvements](https://github.com/thisismydesign/bundler-improvements)
+This project follows [C-Hive guides](https://github.com/c-hive/guides) for code style, way of working and other development concerns.
 
 ## License
 
