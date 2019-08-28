@@ -15,7 +15,7 @@ Status and support
 | Branch | Status |
 | ------ | ------ |
 | Release | [![Build Status](https://travis-ci.org/thisismydesign/json-streamer.svg?branch=release)](https://travis-ci.org/thisismydesign/json-streamer)   [![Coverage Status](https://coveralls.io/repos/github/thisismydesign/json-streamer/badge.svg?branch=release)](https://coveralls.io/github/thisismydesign/json-streamer?branch=release)   [![Gem Version](https://badge.fury.io/rb/json-streamer.svg)](https://badge.fury.io/rb/json-streamer)   [![Total Downloads](http://ruby-gem-downloads-badge.herokuapp.com/json-streamer?type=total)](https://rubygems.org/gems/json-streamer) |
-| Development | [![Build Status](https://travis-ci.org/thisismydesign/json-streamer.svg?branch=master)](https://travis-ci.org/thisismydesign/json-streamer)   [![Coverage Status](https://coveralls.io/repos/github/thisismydesign/json-streamer/badge.svg?branch=master)](https://coveralls.io/github/thisismydesign/json-streamer?branch=master) |
+| Development | [![Build Status](https://github.com/thisismydesign/json-streamer/workflows/Test/badge.svg)](https://github.com/thisismydesign/json-streamer/actions)   [![Coverage Status](https://coveralls.io/repos/github/thisismydesign/json-streamer/badge.svg?branch=master)](https://coveralls.io/github/thisismydesign/json-streamer?branch=master) |
 
 ####  If you've tried JSON streaming with other Ruby libraries before (e.g. [JSON::Stream](https://github.com/dgraham/json-stream), [Yajl::FFI](https://github.com/dgraham/yajl-ffi))
 
