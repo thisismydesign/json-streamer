@@ -1,0 +1,11 @@
+services:
+  ruby:
+    build: .
+    image: thisismydesign/json-streamer:local
+    command: sleep infinity
+    volumes:
+      - bundle_cache:/usr/local/bundle
+      - .:/workspaces/json-streamer:cached
+
+volumes:
+  bundle_cache:
