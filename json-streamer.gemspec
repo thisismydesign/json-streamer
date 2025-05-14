@@ -9,6 +9,7 @@ Gem::Specification.new do |spec|
   spec.summary = "Utility to support JSON streaming allowing you to get data based on various criteria (key, nesting level, etc)."
   spec.homepage = "https://github.com/thisismydesign/json-streamer"
   spec.license = "MIT"
+  spec.required_ruby_version = '>= 3.1.0'
 
   spec.metadata['homepage_uri'] = spec.homepage
   spec.metadata['source_code_uri'] = 'https://github.com/thisismydesign/json-streamer'
