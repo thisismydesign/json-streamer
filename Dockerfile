@@ -7,8 +7,10 @@ FROM docker.io/library/ruby:$RUBY_VERSION-slim
 # Rails app lives here
 WORKDIR /workspaces/blueprinter_schema
 
-# Install packages needed to build gems
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y \
-    build-essential git libyaml-dev pkg-config && \
+    # Install packages needed to build gems
+    build-essential git libyaml-dev pkg-config \
+    # Install gem dependencies
+    libyajl-dev && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
