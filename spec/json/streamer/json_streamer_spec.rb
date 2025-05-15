@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
-
 RSpec.shared_examples 'Json::Streamer::JsonStreamer' do
   let(:example_key) { 'key' }
   let(:example_value) { 'value' }

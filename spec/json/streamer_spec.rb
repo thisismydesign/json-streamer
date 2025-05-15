@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
-
 RSpec.describe Json::Streamer do
   describe '.parser' do
     it 'returns Json::Streamer::JsonStreamer instance' do

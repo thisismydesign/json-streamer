@@ -24,19 +24,19 @@ module Json
         @aggregator.last[:key] unless @aggregator.last.nil?
       end
 
-      def key=(k)
-        @aggregator.last[:key] = k
+      def key=(param)
+        @aggregator.last[:key] = param
       end
 
       def value
         @aggregator.last[:value]
       end
 
-      def value=(d)
+      def value=(param)
         if array_level?
-          value << d
+          value << param
         else
-          value[key] = d
+          value[key] = param
         end
       end
 

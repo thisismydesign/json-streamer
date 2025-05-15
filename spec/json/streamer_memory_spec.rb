@@ -1,9 +1,7 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
-
 RSpec.describe Json::Streamer do
-  describe 'memory usage', speed: 'slow', type: 'memory' do
+  describe 'memory usage', speed: 'slow' do
     before do
       GC.start
       highlight('MEMORY USAGE TEST')

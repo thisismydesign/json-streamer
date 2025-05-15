@@ -20,6 +20,9 @@ jobs:
       - name: Test
         run: bundle exec rspec
 
+      - name: Memory test
+        run: bundle exec rspec --tag speed:slow
+
   lint:
     runs-on: ubuntu-latest
     timeout-minutes: 5

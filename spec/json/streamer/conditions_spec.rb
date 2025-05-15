@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
-
 RSpec.describe Json::Streamer::Conditions do
   let(:yield_level) { -1 }
   let(:yield_key) { nil }
