@@ -42,7 +42,7 @@ RSpec.shared_examples 'Json::Streamer::JsonStreamer' do
     let(:hash) { example_multi_level_hash }
 
     context 'when no block is passed' do
-      let(:subject) { streamer.send(method, params) }
+      let(:subject) { streamer.send(method, **params) }
 
       it 'returns an Enumerable' do
         expect(subject).to be_kind_of(Enumerable)
@@ -56,14 +56,14 @@ RSpec.shared_examples 'Json::Streamer::JsonStreamer' do
     context 'when a block is passed' do
       it 'yields' do
         expect do |block|
-          streamer.send(method, params, &block)
+          streamer.send(method, **params, &block)
         end.to yield_control
       end
     end
 
     context 'when an empty block is passed' do
       it 'returns an empty Enumerable' do
-        unyielded_objects = streamer.send(method, params) {}
+        unyielded_objects = streamer.send(method, **params) {}
         expect(unyielded_objects).to eq([])
       end
     end
@@ -79,7 +79,7 @@ RSpec.shared_examples 'Json::Streamer::JsonStreamer' do
 
     context 'when block is passed' do
       before do
-        streamer.get(params) do |object|
+        streamer.get(**params) do |object|
           yielded_objects << object
         end
       end
@@ -323,7 +323,37 @@ RSpec.shared_examples 'Json::Streamer::JsonStreamer' do
       end
       let(:method) { :get_with_conditions }
 
-      it_behaves_like "an iterable object"
+      # Same as shared context but without keyword arguemnts
+      describe 'it_behaves_like an iterable object' do
+        let(:hash) { example_multi_level_hash }
+
+        context 'when no block is passed' do
+          let(:subject) { streamer.send(method, params) }
+
+          it 'returns an Enumerable' do
+            expect(subject).to be_kind_of(Enumerable)
+          end
+
+          it 'returns array of items that would have been yielded' do
+            expect(subject).to eq(Array.new(3) { example_hash })
+          end
+        end
+
+        context 'when a block is passed' do
+          it 'yields' do
+            expect do |block|
+              streamer.send(method, params, &block)
+            end.to yield_control
+          end
+        end
+
+        context 'when an empty block is passed' do
+          it 'returns an empty Enumerable' do
+            unyielded_objects = streamer.send(method, params) {}
+            expect(unyielded_objects).to eq([])
+          end
+        end
+      end
     end
 
     context 'when block is passed' do
