@@ -9,3 +9,7 @@ AllCops:
 # Do not enforce documentation
 Style/Documentation:
   Enabled: false
+
+# Disabled due to complex use cases
+RSpec/NestedGroups:
+  Enabled: false

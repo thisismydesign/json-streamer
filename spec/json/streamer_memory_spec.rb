@@ -34,19 +34,19 @@ RSpec.describe Json::Streamer do
     end
 
     context 'with streaming' do
-      context 'array of objects parsed with JSON::Streamer' do
+      context 'with array of objects parsed with JSON::Streamer' do
         let(:content) { example_hash }
 
         it_behaves_like 'does not consumne memory'
       end
 
-      context 'array of values parsed with JSON::Streamer' do
+      context 'with array of values parsed with JSON::Streamer' do
         let(:content) { rand }
 
         it_behaves_like 'does not consumne memory'
       end
 
-      context 'array of arrays parsed with JSON::Streamer' do
+      context 'with array of arrays parsed with JSON::Streamer' do
         let(:content) { [rand] }
 
         it_behaves_like 'does not consumne memory'
@@ -54,7 +54,7 @@ RSpec.describe Json::Streamer do
     end
 
     context 'without streaming' do
-      context 'array of objects parsed with JSON::Stream' do
+      context 'with array of objects parsed with JSON::Stream' do
         let(:content) { example_hash }
 
         it 'increases memory consumption' do

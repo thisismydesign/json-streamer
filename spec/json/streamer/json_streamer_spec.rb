@@ -84,9 +84,9 @@ RSpec.shared_examples 'Json::Streamer::JsonStreamer' do
         end
       end
 
-      context 'by nesting_level' do
-        context 'JSON objects' do
-          context '0th level of empty' do
+      describe 'nesting_level option' do
+        context 'with JSON objects' do
+          context 'when at 0th level of empty' do
             let(:hash) { {} }
             let(:params) { { nesting_level: 0 } }
 
@@ -95,7 +95,7 @@ RSpec.shared_examples 'Json::Streamer::JsonStreamer' do
             end
           end
 
-          context '0th level' do
+          context 'when at 0th level' do
             let(:hash) { { example_key => example_hash } }
             let(:params) { { nesting_level: 0 } }
 
@@ -104,7 +104,7 @@ RSpec.shared_examples 'Json::Streamer::JsonStreamer' do
             end
           end
 
-          context '1st level' do
+          context 'when at 1st level' do
             let(:hash) { example_multi_level_hash }
             let(:params) { { nesting_level: 1 } }
 
@@ -114,8 +114,8 @@ RSpec.shared_examples 'Json::Streamer::JsonStreamer' do
           end
         end
 
-        context 'JSON arrays' do
-          context '0th level of flat' do
+        context 'with JSON arrays' do
+          context 'when at 0th level of flat' do
             let(:hash) { [example_value, example_value] }
             let(:params) { { nesting_level: 0 } }
 
@@ -124,7 +124,7 @@ RSpec.shared_examples 'Json::Streamer::JsonStreamer' do
             end
           end
 
-          context '1st level of flat' do
+          context 'when at 1st level of flat' do
             let(:hash) { Array.new(10) { example_hash } }
             let(:params) { { nesting_level: 1 } }
 
@@ -133,7 +133,7 @@ RSpec.shared_examples 'Json::Streamer::JsonStreamer' do
             end
           end
 
-          context '1st level of multi-level' do
+          context 'when at 1st level of multi-level' do
             let(:hash) { [[example_hash, example_hash, example_hash]] }
             let(:params) { { nesting_level: 1 } }
 
@@ -142,7 +142,7 @@ RSpec.shared_examples 'Json::Streamer::JsonStreamer' do
             end
           end
 
-          context '2nd level of multi-level' do
+          context 'when at 2nd level of multi-level' do
             let(:hash) { [[example_hash, example_hash, example_hash]] }
             let(:params) { { nesting_level: 2 } }
 
@@ -153,9 +153,9 @@ RSpec.shared_examples 'Json::Streamer::JsonStreamer' do
         end
       end
 
-      context 'by key' do
-        context 'JSON objects' do
-          context 'flat, key pointing to value' do
+      describe 'key option' do
+        context 'with JSON objects' do
+          context 'when flat, key pointing to value' do
             let(:hash) { example_hash }
             let(:params) { { key: example_key } }
 
@@ -164,7 +164,7 @@ RSpec.shared_examples 'Json::Streamer::JsonStreamer' do
             end
           end
 
-          context 'multi level, key pointing to values' do
+          context 'with multi level, key pointing to values' do
             let(:hash) { example_multi_level_hash }
             let(:params) { { key: example_key } }
 
@@ -173,7 +173,7 @@ RSpec.shared_examples 'Json::Streamer::JsonStreamer' do
             end
           end
 
-          context 'multi level, key pointing to values and objects' do
+          context 'with multi level, key pointing to values and objects' do
             let(:hash) { example_multi_level_hash }
             let(:params) { { key: example_key } }
 
@@ -183,8 +183,8 @@ RSpec.shared_examples 'Json::Streamer::JsonStreamer' do
           end
         end
 
-        context 'JSON arrays' do
-          context 'key pointing to nested array' do
+        context 'with JSON arrays' do
+          context 'when key pointing to nested array' do
             let(:hash) { { items: [[[example_hash, example_hash, example_hash]]] } }
             let(:params) { { nesting_level: 1 } }
 
@@ -197,7 +197,7 @@ RSpec.shared_examples 'Json::Streamer::JsonStreamer' do
             end
           end
 
-          context 'keys pointing to array' do
+          context 'with keys pointing to array' do
             let(:hash) { { items: [example_hash, example_value, example_hash] } }
             let(:params) { { key: 'items' } }
 
@@ -206,7 +206,7 @@ RSpec.shared_examples 'Json::Streamer::JsonStreamer' do
             end
           end
 
-          context 'nested keys pointing to array' do
+          context 'with nested keys pointing to array' do
             let(:hash) { { items: { nested_items: [example_hash, example_value, example_hash] } } }
             let(:params) { { key: 'items' } }
 
@@ -216,8 +216,8 @@ RSpec.shared_examples 'Json::Streamer::JsonStreamer' do
           end
         end
 
-        context 'both JSON arrays and objects' do
-          context 'nested keys pointing to array and object' do
+        context 'when parsing by both JSON arrays and objects' do
+          context 'with nested keys pointing to array and object' do
             let(:hash) do
               { items: { nested_items: [example_hash, example_value, example_hash] }, nested_items: example_hash }
             end
@@ -230,10 +230,10 @@ RSpec.shared_examples 'Json::Streamer::JsonStreamer' do
         end
       end
 
-      context 'yield_values' do
+      describe 'yield_values option' do
         let(:hash) { { obj: example_hash, obj2: { nested_obj: example_hash } } }
 
-        context 'enabled' do
+        context 'when enabled' do
           let(:params) { { nesting_level: 2 } }
 
           it 'yields values from given level' do
@@ -241,7 +241,7 @@ RSpec.shared_examples 'Json::Streamer::JsonStreamer' do
           end
         end
 
-        context 'disabled' do
+        context 'when disabled' do
           let(:params) { { nesting_level: 2, yield_values: false } }
 
           it 'does not yield values from given level' do
@@ -250,12 +250,12 @@ RSpec.shared_examples 'Json::Streamer::JsonStreamer' do
         end
       end
 
-      context 'EventMachine style input' do
+      describe 'EventMachine style input' do
         let(:streamer) { Json::Streamer::JsonStreamer.new }
         let(:hash) { example_multi_level_hash }
         let(:params) { { nesting_level: 1 } }
 
-        context 'input piped to parser' do
+        context 'with input piped to parser' do
           it 'yields objects within JSON object' do
             streamer.parser << json
 
@@ -263,7 +263,7 @@ RSpec.shared_examples 'Json::Streamer::JsonStreamer' do
           end
         end
 
-        context 'chunked input piped to parser' do
+        context 'with chunked input piped to parser' do
           it 'yields objects within JSON object' do
             json_file_mock.each(chunk_size) do |chunk|
               streamer.parser << chunk
@@ -274,7 +274,7 @@ RSpec.shared_examples 'Json::Streamer::JsonStreamer' do
         end
       end
 
-      context 'finished parsing' do
+      describe 'finished parsing' do
         let(:hash) { { obj: example_hash } }
         let(:params) { { nesting_level: 0 } }
 
@@ -283,8 +283,8 @@ RSpec.shared_examples 'Json::Streamer::JsonStreamer' do
         end
       end
 
-      context 'edge cases' do
-        context 'overlapping condition' do
+      describe 'edge cases' do
+        context 'when conditions overlap' do
           let(:hash) { { example_key => { example_key => example_hash } } }
           let(:params) { { key: example_key } }
 
@@ -293,7 +293,7 @@ RSpec.shared_examples 'Json::Streamer::JsonStreamer' do
           end
         end
 
-        context 'nesting_level and key pointing to the same object' do
+        context 'when nesting_level and key both point to the same object' do
           let(:hash) { { items: { nested_items: [example_value, example_value, example_value] } } }
           let(:params) { { key: 'nested_items', nesting_level: 2 } }
 
@@ -303,7 +303,7 @@ RSpec.shared_examples 'Json::Streamer::JsonStreamer' do
         end
       end
 
-      context 'symbolize_keys' do
+      describe 'symbolize_keys option' do
         let(:hash) { { 'object' => example_hash } }
         let(:params) { { nesting_level: 0, symbolize_keys: true } }
 
@@ -365,8 +365,8 @@ RSpec.shared_examples 'Json::Streamer::JsonStreamer' do
         end
       end
 
-      context 'both JSON arrays and objects' do
-        context 'nested keys pointing to array and object' do
+      context 'when there are both JSON arrays and objects' do
+        context 'when nested keys point to array and object' do
           let(:hash) do
             { items: { nested_items: [example_hash, example_value, example_hash] }, nested_items: example_hash }
           end
@@ -377,7 +377,7 @@ RSpec.shared_examples 'Json::Streamer::JsonStreamer' do
         end
       end
 
-      context 'cannot be solved via regular get' do
+      context 'when cannot be solved via regular get' do
         let(:conditions) do
           conditions = Json::Streamer::Conditions.new
           conditions.yield_value = ->(aggregator:, value:) { false }
@@ -418,7 +418,7 @@ RSpec.shared_examples 'Json::Streamer::JsonStreamer' do
   end
 
   describe '#get (generated)' do
-    context 'JSONs with various nesting level and number of objects per level' do
+    context 'with JSONs with various nesting level and number of objects per level' do
       it 'yields all objects on desired level (checking number of yielded objects)' do
         # Setting these options to high can cause the test to run longer
         entries_per_level = 2
@@ -442,13 +442,13 @@ RSpec.shared_examples 'Json::Streamer::JsonStreamer' do
 end
 
 RSpec.describe Json::Streamer::JsonStreamer do
-  context 'using default event generator' do
+  context 'when using default event generator' do
     let(:event_generator) { :default }
 
     it_behaves_like 'Json::Streamer::JsonStreamer'
   end
 
-  context 'using custom yajl/ffi event generator' do
+  context 'when using custom yajl/ffi event generator' do
     require 'yajl/ffi'
     let(:event_generator) { Yajl::FFI::Parser.new }
 
