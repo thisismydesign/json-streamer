@@ -1,14 +1,16 @@
+# frozen_string_literal: true
+
 require_relative 'lib/json/streamer/version'
 
 Gem::Specification.new do |spec|
-  spec.name = "json-streamer"
+  spec.name = 'json-streamer'
   spec.version = Json::Streamer::VERSION
-  spec.authors = ["thisismydesign"]
-  spec.email = ["thisismydesign@users.noreply.github.com"]
+  spec.authors = ['thisismydesign']
+  spec.email = ['thisismydesign@users.noreply.github.com']
 
-  spec.summary = "Utility to support JSON streaming allowing you to get data based on various criteria (key, nesting level, etc)."
-  spec.homepage = "https://github.com/thisismydesign/json-streamer"
-  spec.license = "MIT"
+  spec.summary = 'Utility to support JSON streaming allowing you to get data based on various criteria (key, nesting level, etc).'
+  spec.homepage = 'https://github.com/thisismydesign/json-streamer'
+  spec.license = 'MIT'
   spec.required_ruby_version = '>= 3.1.0'
 
   spec.metadata['homepage_uri'] = spec.homepage
@@ -23,12 +25,13 @@ Gem::Specification.new do |spec|
         f.start_with?(*%w[bin/ test/ spec/ features/ .git .github appveyor Gemfile])
     end
   end
-  spec.bindir = "exe"
+  spec.bindir = 'exe'
   spec.executables = spec.files.grep(%r{\Aexe/}) { |f| File.basename(f) }
-  spec.require_paths = ["lib"]
+  spec.require_paths = ['lib']
 
   # Because of `require_relative`
   spec.required_ruby_version = '>= 1.9.2'
 
-  spec.add_dependency "json-stream"
+  spec.add_dependency 'json-stream'
+  spec.metadata['rubygems_mfa_required'] = 'true'
 end

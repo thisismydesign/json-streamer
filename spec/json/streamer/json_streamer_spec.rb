@@ -1,10 +1,12 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 RSpec.shared_examples 'Json::Streamer::JsonStreamer' do
   let(:example_key) { 'key' }
   let(:example_value) { 'value' }
   let(:example_hash) { { example_key => example_value } }
-  let(:example_multi_level_hash) { {object1: example_hash, object2: example_hash, object3: example_hash} }
+  let(:example_multi_level_hash) { { object1: example_hash, object2: example_hash, object3: example_hash } }
   let(:chunk_size) { 10 }
   let(:json) { JSON.generate(hash) }
   let(:json_file_mock) { StringIO.new(json) }
@@ -45,7 +47,7 @@ RSpec.shared_examples 'Json::Streamer::JsonStreamer' do
       let(:subject) { streamer.send(method, **params) }
 
       it 'returns an Enumerable' do
-        expect(subject).to be_kind_of(Enumerable)
+        expect(subject).to be_a(Enumerable)
       end
 
       it 'returns array of items that would have been yielded' do
@@ -74,7 +76,7 @@ RSpec.shared_examples 'Json::Streamer::JsonStreamer' do
       let(:params) { { nesting_level: 1 } }
       let(:method) { :get }
 
-      it_behaves_like "an iterable object"
+      it_behaves_like 'an iterable object'
     end
 
     context 'when block is passed' do
@@ -96,7 +98,7 @@ RSpec.shared_examples 'Json::Streamer::JsonStreamer' do
           end
 
           context '0th level' do
-            let(:hash) { {example_key => example_hash} }
+            let(:hash) { { example_key => example_hash } }
             let(:params) { { nesting_level: 0 } }
 
             it 'yields whole JSON' do
@@ -125,7 +127,7 @@ RSpec.shared_examples 'Json::Streamer::JsonStreamer' do
           end
 
           context '1st level of flat' do
-            let(:hash) { Array.new(10) {example_hash} }
+            let(:hash) { Array.new(10) { example_hash } }
             let(:params) { { nesting_level: 1 } }
 
             it 'yields objects in array' do
@@ -211,15 +213,17 @@ RSpec.shared_examples 'Json::Streamer::JsonStreamer' do
             let(:params) { { key: 'items' } }
 
             it 'keeps key pointing to arrays' do
-              expect(yielded_objects).to eq([{'nested_items' => [example_hash, example_value, example_hash]}])
+              expect(yielded_objects).to eq([{ 'nested_items' => [example_hash, example_value, example_hash] }])
             end
           end
         end
 
         context 'both JSON arrays and objects' do
           context 'nested keys pointing to array and object' do
-            let(:hash) { { items: { nested_items: [example_hash, example_value, example_hash] }, nested_items: example_hash } }
-            let(:params) { {key: 'nested_items'} }
+            let(:hash) do
+              { items: { nested_items: [example_hash, example_value, example_hash] }, nested_items: example_hash }
+            end
+            let(:params) { { key: 'nested_items' } }
 
             it 'yields both array and object' do
               expect(yielded_objects).to eq([[example_hash, example_value, example_hash], example_hash])
@@ -251,7 +255,7 @@ RSpec.shared_examples 'Json::Streamer::JsonStreamer' do
       context 'EventMachine style input' do
         let(:streamer) { Json::Streamer::JsonStreamer.new }
         let(:hash) { example_multi_level_hash }
-        let(:params) { { nesting_level:1 } }
+        let(:params) { { nesting_level: 1 } }
 
         context 'input piped to parser' do
           it 'yields objects within JSON object' do
@@ -331,7 +335,7 @@ RSpec.shared_examples 'Json::Streamer::JsonStreamer' do
           let(:subject) { streamer.send(method, params) }
 
           it 'returns an Enumerable' do
-            expect(subject).to be_kind_of(Enumerable)
+            expect(subject).to be_a(Enumerable)
           end
 
           it 'returns array of items that would have been yielded' do
@@ -365,7 +369,9 @@ RSpec.shared_examples 'Json::Streamer::JsonStreamer' do
 
       context 'both JSON arrays and objects' do
         context 'nested keys pointing to array and object' do
-          let(:hash) { { items: { nested_items: [example_hash, example_value, example_hash] }, nested_items: example_hash } }
+          let(:hash) do
+            { items: { nested_items: [example_hash, example_value, example_hash] }, nested_items: example_hash }
+          end
 
           it 'yields both array and object' do
             expect(yielded_objects).to eq([[example_hash, example_value, example_hash], example_hash])
@@ -384,36 +390,38 @@ RSpec.shared_examples 'Json::Streamer::JsonStreamer' do
           conditions
         end
 
-        let(:hash) { {
-            "other": "stuff",
-            "items1": [
-                {
-                    "key1": 'value'
-                },
-                {
-                    "key2": 'value'
-                }
+        let(:hash) do
+          {
+            other: 'stuff',
+            items1: [
+              {
+                key1: 'value'
+              },
+              {
+                key2: 'value'
+              }
             ],
-            "items2": [
-                {
-                    "key3": 'value'
-                },
-                {
-                    "key4": 'value'
-                }
+            items2: [
+              {
+                key3: 'value'
+              },
+              {
+                key4: 'value'
+              }
             ]
-        } }
+          }
+        end
+
         it 'solves it ^^' do
-          expect(yielded_objects).to eq([{"key1"=>"value"}, {"key2"=>"value"}])
+          expect(yielded_objects).to eq([{ 'key1' => 'value' }, { 'key2' => 'value' }])
         end
       end
     end
   end
 
-  context '#get (generated)' do
+  describe '#get (generated)' do
     context 'JSONs with various nesting level and number of objects per level' do
       it 'yields all objects on desired level (checking number of yielded objects)' do
-
         # Setting these options to high can cause the test to run longer
         entries_per_level = 2
         max_levels = 10
@@ -424,11 +432,11 @@ RSpec.shared_examples 'Json::Streamer::JsonStreamer' do
           streamer = Json::Streamer::JsonStreamer.new(json_file_mock)
 
           yielded_objects = []
-          streamer.get(nesting_level:max_level-1) do |object|
+          streamer.get(nesting_level: max_level - 1) do |object|
             yielded_objects << object
           end
 
-          expect(yielded_objects.length).to eq(entries_per_level**(max_level-1))
+          expect(yielded_objects.length).to eq(entries_per_level**(max_level - 1))
         end
       end
     end
@@ -438,12 +446,14 @@ end
 RSpec.describe Json::Streamer::JsonStreamer do
   context 'using default event generator' do
     let(:event_generator) { :default }
+
     it_behaves_like 'Json::Streamer::JsonStreamer'
   end
 
   context 'using custom yajl/ffi event generator' do
-    require "yajl/ffi"
+    require 'yajl/ffi'
     let(:event_generator) { Yajl::FFI::Parser.new }
+
     it_behaves_like 'Json::Streamer::JsonStreamer'
   end
 end

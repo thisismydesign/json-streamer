@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 RSpec.describe Json::Streamer::Conditions do
@@ -5,15 +7,14 @@ RSpec.describe Json::Streamer::Conditions do
   let(:yield_key) { nil }
   let(:key) { nil }
   let(:level) { 0 }
-  let(:conditions) { Json::Streamer::Conditions.new(yield_level: yield_level, yield_key: yield_key) }
+  let(:conditions) { described_class.new(yield_level: yield_level, yield_key: yield_key) }
   let(:aggregator) { Json::Streamer::Aggregator.new }
 
   before do
-    allow(aggregator).to receive(:key).and_return(key)
-    allow(aggregator).to receive(:level).and_return(level)
+    allow(aggregator).to receive_messages(key: key, level: level)
   end
 
-  RSpec.shared_examples "yield" do |method|
+  RSpec.shared_examples 'yield' do |method|
     context 'level' do
       context 'true' do
         let(:level) { 1 }
@@ -29,7 +30,7 @@ RSpec.describe Json::Streamer::Conditions do
         let(:yield_level) { 1 }
 
         it 'returns whether provided level equals yield_level' do
-          expect(conditions.send(method).call(aggregator: aggregator)).to_not be
+          expect(conditions.send(method).call(aggregator: aggregator)).not_to be
         end
       end
     end
@@ -49,21 +50,21 @@ RSpec.describe Json::Streamer::Conditions do
         let(:yield_key) { 'key' }
 
         it 'returns whether provided key equals yield_key' do
-          expect(conditions.send(method).call(aggregator: aggregator)).to_not be
+          expect(conditions.send(method).call(aggregator: aggregator)).not_to be
         end
       end
     end
   end
 
   describe '#yield_value' do
-    it_behaves_like "yield", :yield_value
+    it_behaves_like 'yield', :yield_value
   end
 
   describe '#yield_object' do
-    it_behaves_like "yield", :yield_object
+    it_behaves_like 'yield', :yield_object
   end
 
   describe '#yield_array' do
-    it_behaves_like "yield", :yield_array
+    it_behaves_like 'yield', :yield_array
   end
 end

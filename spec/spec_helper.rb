@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'bundler/setup'
 Bundler.setup
 
@@ -18,10 +20,10 @@ DEBUG = false
 
 def highlight(msg)
   puts("\n#{'#' * 10} #{msg} #{'#' * 10}\n\n")
-  if block_given?
-    yield
-    puts("\n#{'#' * 8} #{msg} END #{'#' * 8}\n\n")
-  end
+  return unless block_given?
+
+  yield
+  puts("\n#{'#' * 8} #{msg} END #{'#' * 8}\n\n")
 end
 
 def current_memory_usage

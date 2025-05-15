@@ -1,10 +1,11 @@
+# frozen_string_literal: true
+
 require_relative 'conditions'
 require_relative 'parser'
 
 module Json
   module Streamer
     class JsonStreamer
-
       attr_reader :parser
 
       def initialize(file_io = nil, chunk_size = 1000, event_generator = :default)
@@ -36,7 +37,7 @@ module Json
         end
 
         process_io
-        
+
         unyielded_items
       end
 
@@ -64,7 +65,7 @@ module Json
       private
 
       def process_io
-        @file_io.each(@chunk_size) { |chunk| parser << chunk } if @file_io
+        @file_io&.each(@chunk_size) { |chunk| parser << chunk }
       end
 
       def make_event_generator(generator)

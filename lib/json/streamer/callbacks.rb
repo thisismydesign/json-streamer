@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Json
   module Streamer
     class Callbacks
@@ -8,11 +10,11 @@ module Json
       end
 
       def start_object
-        new_level(Hash.new)
+        new_level({})
       end
 
       def start_array
-        new_level(Array.new)
+        new_level([])
       end
 
       def key(k, symbolize_keys)
@@ -24,12 +26,12 @@ module Json
         add_value(value) unless used
       end
 
-      def end_object
-        end_level { |obj| yield obj }
+      def end_object(&)
+        end_level(&)
       end
 
-      def end_array
-        end_level { |obj| yield obj }
+      def end_array(&)
+        end_level(&)
       end
 
       private
@@ -40,7 +42,7 @@ module Json
         @aggregator.pop
 
         used = yield data
-        add_value(data) unless used or @aggregator.empty?
+        add_value(data) unless used || @aggregator.empty?
       end
 
       def add_value(value)

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 RSpec.describe Json::Streamer do
@@ -7,18 +9,18 @@ RSpec.describe Json::Streamer do
       highlight('MEMORY USAGE TEST')
     end
 
-    let(:example_hash) { {'key' => rand} }
+    let(:example_hash) { { 'key' => rand } }
     let(:size) { 2**18 }
     let(:hash) { Array.new(size) { content } }
     let!(:json_file_mock) { StringIO.new(JSON.generate(hash)) }
 
     RSpec.shared_examples 'does not consumne memory' do
-      it 'should NOT increase memory consumption' do
+      it 'does not increase memory consumption' do
         p "Number of elements: #{size}"
         memory_usage_before_parsing = current_memory_usage
         p "Memory consumption before parsing: #{memory_usage_before_parsing} MB"
 
-        streamer = Json::Streamer.parser(file_io: json_file_mock)
+        streamer = described_class.parser(file_io: json_file_mock)
         object_count = 0
         streamer.get(nesting_level: 1) do
           object_count += 1
@@ -29,7 +31,7 @@ RSpec.describe Json::Streamer do
         p "Memory consumption after parsing: #{memory_usage_after_parsing.round} MB"
 
         expect(memory_usage_after_parsing).to be < 1.1 * memory_usage_before_parsing
-        p "With JSON::Streamer memory consumption did not increase by more than 10% during processing."
+        p 'With JSON::Streamer memory consumption did not increase by more than 10% during processing.'
       end
     end
 
@@ -57,7 +59,7 @@ RSpec.describe Json::Streamer do
       context 'array of objects parsed with JSON::Stream' do
         let(:content) { example_hash }
 
-        it 'should increase memory consumption' do
+        it 'increases memory consumption' do
           p "Number of elements: #{size}"
           memory_usage_before_parsing = current_memory_usage
           p "Memory consumption before parsing: #{memory_usage_before_parsing} MB"
@@ -69,7 +71,7 @@ RSpec.describe Json::Streamer do
           p "Memory consumption after parsing: #{memory_usage_after_parsing.round} MB"
 
           expect(memory_usage_after_parsing).to be > 1.5 * memory_usage_before_parsing
-          p "With JSON::Stream memory consumption increased by at least 50% during processing."
+          p 'With JSON::Stream memory consumption increased by at least 50% during processing.'
         end
       end
     end
