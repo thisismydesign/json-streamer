@@ -14,6 +14,8 @@ module Json
         @event_consumer = Callbacks.new(@aggregator)
       end
 
+      # rubocop:disable Metrics/MethodLength
+      # rubocop:disable Metrics/AbcSize
       def get(conditions)
         @event_generator.start_object { @event_consumer.start_object }
         @event_generator.start_array { @event_consumer.start_array }
@@ -40,6 +42,8 @@ module Json
           end
         end
       end
+      # rubocop:enable Metrics/MethodLength
+      # rubocop:enable Metrics/AbcSize
 
       def <<(data)
         @event_generator << data

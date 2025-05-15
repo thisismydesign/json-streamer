@@ -13,42 +13,42 @@ RSpec.describe Json::Streamer::Conditions do
   end
 
   RSpec.shared_examples 'yield' do |method|
-    context 'level' do
-      context 'true' do
+    context 'with level' do
+      context 'when true' do
         let(:level) { 1 }
         let(:yield_level) { 1 }
 
         it 'returns whether provided level equals yield_level' do
-          expect(conditions.send(method).call(aggregator: aggregator)).to be
+          expect(conditions.send(method).call(aggregator: aggregator)).to be_truthy
         end
       end
 
-      context 'false' do
+      context 'when false' do
         let(:level) { 2 }
         let(:yield_level) { 1 }
 
         it 'returns whether provided level equals yield_level' do
-          expect(conditions.send(method).call(aggregator: aggregator)).not_to be
+          expect(conditions.send(method).call(aggregator: aggregator)).to be_falsey
         end
       end
     end
 
-    context 'key' do
-      context 'true' do
+    context 'with key' do
+      context 'when true' do
         let(:key) { 'key' }
         let(:yield_key) { 'key' }
 
         it 'returns whether provided key equals yield_key' do
-          expect(conditions.send(method).call(aggregator: aggregator)).to be
+          expect(conditions.send(method).call(aggregator: aggregator)).to be_truthy
         end
       end
 
-      context 'false' do
+      context 'when false' do
         let(:key) { 'else' }
         let(:yield_key) { 'key' }
 
         it 'returns whether provided key equals yield_key' do
-          expect(conditions.send(method).call(aggregator: aggregator)).not_to be
+          expect(conditions.send(method).call(aggregator: aggregator)).to be_falsey
         end
       end
     end

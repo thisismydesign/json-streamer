@@ -13,6 +13,8 @@ RSpec.describe Json::Streamer do
     let!(:json_file_mock) { StringIO.new(JSON.generate(hash)) }
 
     RSpec.shared_examples 'does not consumne memory' do
+      # rubocop:disable RSpec/ExampleLength
+      # rubocop:disable RSpec/MultipleExpectations
       it 'does not increase memory consumption' do
         p "Number of elements: #{size}"
         memory_usage_before_parsing = current_memory_usage
@@ -31,6 +33,8 @@ RSpec.describe Json::Streamer do
         expect(memory_usage_after_parsing).to be < 1.1 * memory_usage_before_parsing
         p 'With JSON::Streamer memory consumption did not increase by more than 10% during processing.'
       end
+      # rubocop:enable RSpec/ExampleLength
+      # rubocop:enable RSpec/MultipleExpectations
     end
 
     context 'with streaming' do
@@ -57,6 +61,8 @@ RSpec.describe Json::Streamer do
       context 'with array of objects parsed with JSON::Stream' do
         let(:content) { example_hash }
 
+        # rubocop:disable RSpec/MultipleExpectations
+        # rubocop:disable RSpec/ExampleLength
         it 'increases memory consumption' do
           p "Number of elements: #{size}"
           memory_usage_before_parsing = current_memory_usage
@@ -71,6 +77,8 @@ RSpec.describe Json::Streamer do
           expect(memory_usage_after_parsing).to be > 1.5 * memory_usage_before_parsing
           p 'With JSON::Stream memory consumption increased by at least 50% during processing.'
         end
+        # rubocop:enable RSpec/ExampleLength
+        # rubocop:enable RSpec/MultipleExpectations
       end
     end
   end

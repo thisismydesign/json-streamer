@@ -17,8 +17,8 @@ module Json
         new_level([])
       end
 
-      def key(k, symbolize_keys)
-        @aggregator.key = symbolize_keys ? k.to_sym : k
+      def key(param, symbolize_keys)
+        @aggregator.key = symbolize_keys ? param.to_sym : param
       end
 
       def value(value)

@@ -19,6 +19,7 @@ module Json
         parser << data
       end
 
+      # rubocop:disable Metrics/MethodLength
       def get(nesting_level: -1, key: nil, yield_values: true, symbolize_keys: false)
         conditions = Conditions.new(yield_level: nesting_level, yield_key: key)
         conditions.yield_value = ->(aggregator:, value:) { false } unless yield_values
@@ -40,7 +41,9 @@ module Json
 
         unyielded_items
       end
+      # rubocop:enable Metrics/MethodLength
 
+      # rubocop:disable Metrics/MethodLength
       def get_with_conditions(conditions, options = {})
         @parser = Parser.new(@event_generator, symbolize_keys: options[:symbolize_keys])
         unyielded_items = []
@@ -57,6 +60,7 @@ module Json
 
         unyielded_items
       end
+      # rubocop:enable Metrics/MethodLength
 
       def aggregator
         parser.aggregator

@@ -29,12 +29,12 @@ RSpec.shared_examples 'Json::Streamer::JsonStreamer' do
 
   describe '#<<' do
     it 'forwards data to parser' do
-      data = {}
       streamer = Json::Streamer.parser
+      allow(streamer).to receive(:<<)
 
-      expect(streamer.parser).to receive(:<<).with(data)
+      streamer << {}
 
-      streamer << data
+      expect(streamer).to have_received(:<<).with({})
     end
   end
 
@@ -42,14 +42,14 @@ RSpec.shared_examples 'Json::Streamer::JsonStreamer' do
     let(:hash) { example_multi_level_hash }
 
     context 'when no block is passed' do
-      let(:subject) { streamer.send(method, **params) }
+      subject(:send) { streamer.send(method, **params) }
 
       it 'returns an Enumerable' do
-        expect(subject).to be_a(Enumerable)
+        expect(send).to be_a(Enumerable)
       end
 
       it 'returns array of items that would have been yielded' do
-        expect(subject).to eq(Array.new(3) { example_hash })
+        expect(send).to eq(Array.new(3) { example_hash })
       end
     end
 
@@ -63,7 +63,10 @@ RSpec.shared_examples 'Json::Streamer::JsonStreamer' do
 
     context 'when an empty block is passed' do
       it 'returns an empty Enumerable' do
+        # rubocop:disable Lint/EmptyBlock
         unyielded_objects = streamer.send(method, **params) {}
+        # rubocop:enable Lint/EmptyBlock
+
         expect(unyielded_objects).to eq([])
       end
     end
@@ -330,14 +333,14 @@ RSpec.shared_examples 'Json::Streamer::JsonStreamer' do
         let(:hash) { example_multi_level_hash }
 
         context 'when no block is passed' do
-          let(:subject) { streamer.send(method, params) }
+          subject(:send) { streamer.send(method, params) }
 
           it 'returns an Enumerable' do
-            expect(subject).to be_a(Enumerable)
+            expect(send).to be_a(Enumerable)
           end
 
           it 'returns array of items that would have been yielded' do
-            expect(subject).to eq(Array.new(3) { example_hash })
+            expect(send).to eq(Array.new(3) { example_hash })
           end
         end
 
@@ -351,7 +354,10 @@ RSpec.shared_examples 'Json::Streamer::JsonStreamer' do
 
         context 'when an empty block is passed' do
           it 'returns an empty Enumerable' do
+            # rubocop:disable Lint/EmptyBlock
             unyielded_objects = streamer.send(method, params) {}
+            # rubocop:enable Lint/EmptyBlock
+
             expect(unyielded_objects).to eq([])
           end
         end
@@ -419,6 +425,7 @@ RSpec.shared_examples 'Json::Streamer::JsonStreamer' do
 
   describe '#get (generated)' do
     context 'with JSONs with various nesting level and number of objects per level' do
+      # rubocop:disable RSpec/ExampleLength
       it 'yields all objects on desired level (checking number of yielded objects)' do
         # Setting these options to high can cause the test to run longer
         entries_per_level = 2
@@ -437,6 +444,7 @@ RSpec.shared_examples 'Json::Streamer::JsonStreamer' do
           expect(yielded_objects.length).to eq(entries_per_level**(max_level - 1))
         end
       end
+      # rubocop:enable RSpec/ExampleLength
     end
   end
 end
