@@ -12,10 +12,7 @@ Status and support
 *You are viewing the README of version [v2.1.0](https://github.com/thisismydesign/json-streamer/releases/tag/v2.1.0). You can find other releases [here](https://github.com/thisismydesign/json-streamer/releases).*
 <!--- Version informartion end -->
 
-| Branch | Status |
-| ------ | ------ |
-| Release | [![Coverage Status](https://coveralls.io/repos/github/thisismydesign/json-streamer/badge.svg?branch=release)](https://coveralls.io/github/thisismydesign/json-streamer?branch=release)   [![Gem Version](https://badge.fury.io/rb/json-streamer.svg)](https://badge.fury.io/rb/json-streamer)   [![Total Downloads](https://img.shields.io/endpoint?url=https%3A%2F%2Fgem-badge.onrender.com%2Fdownloads%2Fjson-streamer)](https://rubygems.org/gems/json-streamer) |
-| Development | [![Build Status](https://github.com/thisismydesign/json-streamer/workflows/Test/badge.svg)](https://github.com/thisismydesign/json-streamer/actions)   [![Coverage Status](https://coveralls.io/repos/github/thisismydesign/json-streamer/badge.svg?branch=master)](https://coveralls.io/github/thisismydesign/json-streamer?branch=master) |
+---
 
 ####  If you've tried JSON streaming with other Ruby libraries before (e.g. [JSON::Stream](https://github.com/dgraham/json-stream), [Yajl::FFI](https://github.com/dgraham/yajl-ffi))
 
