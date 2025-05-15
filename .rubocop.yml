@@ -1,0 +1,11 @@
+plugins:
+  - rubocop-rake
+  - rubocop-rspec
+
+AllCops:
+  TargetRubyVersion: 3.1
+  NewCops: enable
+
+# Do not enforce documentation
+Style/Documentation:
+  Enabled: false

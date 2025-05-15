@@ -7,6 +7,7 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
+    ast (2.4.3)
     bigdecimal (3.1.9)
     date (3.4.1)
     diff-lcs (1.6.2)
@@ -30,17 +31,28 @@ GEM
       pp (>= 0.6.0)
       rdoc (>= 4.0.0)
       reline (>= 0.4.2)
+    json (2.12.0)
     json-stream (1.0.0)
+    language_server-protocol (3.17.0.5)
+    lint_roller (1.1.0)
     ndhash (0.4.0)
+    parallel (1.27.0)
+    parser (3.3.8.0)
+      ast (~> 2.4.1)
+      racc
     pp (0.6.2)
       prettyprint
     prettyprint (0.2.0)
+    prism (1.4.0)
     psych (5.2.6)
       date
       stringio
+    racc (1.8.1)
+    rainbow (3.1.1)
     rake (13.2.1)
     rdoc (6.13.1)
       psych (>= 4.0.0)
+    regexp_parser (2.10.0)
     reline (0.6.1)
       io-console (~> 0.5)
     rspec (3.13.0)
@@ -56,6 +68,27 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.13.0)
     rspec-support (3.13.3)
+    rubocop (1.75.6)
+      json (~> 2.3)
+      language_server-protocol (~> 3.17.0.2)
+      lint_roller (~> 1.1.0)
+      parallel (~> 1.10)
+      parser (>= 3.3.0.2)
+      rainbow (>= 2.2.2, < 4.0)
+      regexp_parser (>= 2.9.3, < 3.0)
+      rubocop-ast (>= 1.44.0, < 2.0)
+      ruby-progressbar (~> 1.7)
+      unicode-display_width (>= 2.4.0, < 4.0)
+    rubocop-ast (1.44.1)
+      parser (>= 3.3.7.2)
+      prism (~> 1.4)
+    rubocop-rake (0.7.1)
+      lint_roller (~> 1.1)
+      rubocop (>= 1.72.1)
+    rubocop-rspec (3.6.0)
+      lint_roller (~> 1.1)
+      rubocop (~> 1.72, >= 1.72.1)
+    ruby-progressbar (1.13.0)
     simplecov (0.22.0)
       docile (~> 1.1)
       simplecov-html (~> 0.11)
@@ -63,6 +96,9 @@ GEM
     simplecov-html (0.13.1)
     simplecov_json_formatter (0.1.4)
     stringio (3.1.7)
+    unicode-display_width (3.1.4)
+      unicode-emoji (~> 4.0, >= 4.0.4)
+    unicode-emoji (4.0.4)
     yajl-ffi (1.0.0)
       ffi (~> 1.16)
 
@@ -86,6 +122,9 @@ DEPENDENCIES
   ndhash
   rake (~> 13.0)
   rspec (~> 3.0)
+  rubocop (~> 1.75)
+  rubocop-rake
+  rubocop-rspec
   simplecov
   yajl-ffi
 
